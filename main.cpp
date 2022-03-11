@@ -1,23 +1,10 @@
 #include <iostream>
-#include "tinyxml2.h"
+#include <fstream>
+#include <list>
+#include <iterator>
 
-using namespace tinyxml2;
+using namespace std;
 
-#ifndef XMLCheckResult
-#define XMLCheckResult(a_eResult) if ((a_eResult) != XML_SUCCESS) { printf("Error: %i\n", a_eResult); return a_eResult; } else printf("all good\n");
-#endif
-
-int xmlFunc() {
-    XMLDocument xmlDoc;
-    XMLNode * pRoot = xmlDoc.NewElement("Root");
-    xmlDoc.InsertFirstChild(pRoot);
-    XMLElement * pElement = xmlDoc.NewElement("IntValue");
-    pElement->SetText(10);
-    pRoot->InsertEndChild(pElement);
-    XMLError eResult = xmlDoc.SaveFile("SavedData.xml");
-    XMLCheckResult(eResult);
-    return 0;
-}
 
 
 #ifdef __APPLE__
@@ -107,10 +94,7 @@ void drawCylinder(float r, float height, int slices) {
     void drawCone(float r, float height, int slices,int stacks) {
         float anglePart = 2 * M_PI / slices;
         float heightPart = height/stacks;
-
-        float initialHeight =- height/2;
-
-
+        float initialHeight =0;
         for (int i = 0; i < slices;i++) {
             float angle = ((float) i) * anglePart;
             float nextAngle = angle + anglePart;
@@ -121,7 +105,7 @@ void drawCylinder(float r, float height, int slices) {
                 float rUp = r * (float )(stacks-j-1)/(float )stacks;
                 float heightUP = initialHeight + heightPart * (float)(j+1);
 
-                printf("%d | %f R: %f |%f and H: %f | %f \n",j,initialHeight,heightUP,heightDown,rUp,rDown);
+                //printf("%d | %f R: %f |%f and H: %f | %f \n",j,initialHeight,heightUP,heightDown,rUp,rDown);
 
 
                 glColor3f(1, 1, 0);
@@ -146,35 +130,37 @@ void drawCylinder(float r, float height, int slices) {
             glEnd();
         }
 }
-/*
+
 void drawSphere(float radius, int slices,int stacks){
     float anglePart = 2 * M_PI / slices;
-    float heightPart = radius/stacks;
-    float initialAngle = M_PI/stacks;
-    for (int i = 0; i < slices;i++) {
+    float heightPart = M_PI/stacks;
+    float initialAngle = -M_PI/2;
+    for (int i = 0; i < 1;i++) {
         float angle = ((float) i) * anglePart;
         float nextAngle = angle + anglePart;
         for (int j = 0; j < stacks; j++) {
             glBegin(GL_TRIANGLES);
-            float rDown =  radius * (float )(stacks-j)/(float )stacks;
-            float heightDown = initialHeight+heightPart*(float)j;
-            float rUp = radius * (float )(stacks-j-1)/(float )stacks;
-            float heightUP = initialHeight + heightPart * (float)(j+1);
+            float angleUp =   initialAngle+ heightPart*(float)(j+1);
+            float angleDown = initialAngle+ heightPart*(float)(j);
 
-            printf("%d | %f R: %f |%f and H: %f | %f \n",j,initialHeight,heightUP,heightDown,rUp,rDown);
+            printf("%d | %f | %f\n",j,angleUp*(180/M_PI),angleDown*(180/M_PI));
 
-
+            if(angleUp>=M_PI/2)angleUp=M_PI/2-0.00001;
+            if(angleDown<=-M_PI/2)angleDown=-M_PI/2+0.000001;
             glColor3f(1, 1, 0);
 
-            glVertex3f(rUp* sin(nextAngle),heightUP,rUp* cos(nextAngle));
-            glVertex3f(rUp* sin(angle),heightUP,rUp* cos(angle));
-            glVertex3f(rDown * sin(angle), heightDown, rDown * cos(angle));
+
+            glColor3f(1,1,0);
+            glVertex3f(radius* cos(angleUp)*sin(angle),radius*sin(angleUp),radius* cos(angle)* cos(angleUp) ) ;
+            glVertex3f(radius* cos(angleDown)*sin(angle),radius*sin(angleDown),radius* cos(angle)* cos(angleDown));
+            glVertex3f(radius* cos(angleDown)*sin(nextAngle),radius*sin(angleDown), radius * cos(nextAngle)* cos(angleDown));
 
 
 
-            glVertex3f(rDown* sin(angle), heightDown, rDown * cos(angle));
-            glVertex3f(rDown* sin(nextAngle),heightDown,rDown* cos(nextAngle));
-            glVertex3f(rUp* sin(nextAngle), heightUP, rUp* cos(nextAngle));
+            //glColor3f(1,0,0);
+            glVertex3f(radius* cos(angleUp)*sin(nextAngle),radius* sin(angleUp), radius * cos(nextAngle)* cos(angleUp));
+            glVertex3f(radius* cos(angleUp)*sin(angle),radius* sin(angleUp),radius* cos(angle)* cos(angleUp));
+            glVertex3f(radius* cos(angleDown)*sin(nextAngle), radius* sin(angleDown), radius* cos(nextAngle)* cos(angleDown));
 
             glEnd();
         }
@@ -182,101 +168,181 @@ void drawSphere(float radius, int slices,int stacks){
 
 
 }
+void writeVerticetoFile(std::ofstream& file, float x,float y, float z){
+    file << x << " " << y << " " << z << '\n';
+}
 
- */
-void drawPlane (float length,float divisions){
-    float inicial_posX = - (length*divisions)/2;
+void writeFile(list<float> list,string filename){
+    ofstream file;
+    file.open(filename);
+    ::list<float>::iterator it;
+    int nrVertices = list.size()/3;
+    file << nrVertices << '\n';
+    for (it = list.begin(); it != list.end(); ++it) {
+        file << *it << ' ';
+        ++it;
+        file << *it << ' ';
+        ++it;
+        file << *it << ' ';
+        file << '\n';
+    }
+}
+
+void addVerticeToList(list<float>&list, float x,float y, float z){
+    list.push_back(x);
+    list.push_back(y);
+    list.push_back(z);
+
+}
+
+list<float> readFile(string filename){
+    ifstream file(filename);
+    list<float> list;
+    int nrVertices;
+    file>>nrVertices;
+    for (int i = 0; i < nrVertices;i++){
+        // Output the text from the file
+        float x,y,z;
+        file >> x;
+        file >> y;
+        file >> z;
+        printf("%f |%f |%f\n",x,y,z);
+        addVerticeToList(list,x,y,z);
+    }
+    return list;
+}
+
+void drawList (list<float>list){
+    glBegin(GL_TRIANGLES);
+    ::list<float>::iterator it;
+    for (it = list.begin(); it != list.end(); ++it) {
+        float x = *it;
+        ++it;
+        float y = *it;
+        ++it;
+        float z = *it;
+        glVertex3f(x,y,z);
+    }
+    glEnd();
+}
+
+void drawPlane (float length,int divisions){
+
+    float inicial_posX = - length/2;
     float inicial_posZ = inicial_posX;
+    float part = length/(float )divisions;
+
+    list<float> *list = new ::list<float>;
+
     for (int i = 0;i < divisions;i++){
         for (int j = 0;j < divisions;j++){
-            float posX = inicial_posX + i * length;
-            float posZ = inicial_posZ + j * length;
-            glBegin(GL_TRIANGLES);
-            glVertex3f(posX+length,0,posZ+length);
-            glVertex3f(posX+length,0,posZ);
-            glVertex3f(posX,0,posZ);
+            float posX = inicial_posX + i * part;
+            float posZ = inicial_posZ + j * part;
 
-            glVertex3f(posX,0,posZ);
-            glVertex3f(posX,0,posZ+length);
-            glVertex3f(posX+length,0,posZ+length);
-            glEnd();
+            addVerticeToList(*list, posX + part, 0, posZ + part);
+            addVerticeToList(*list, posX + part, 0, posZ);
+            addVerticeToList(*list, posX, 0, posZ);
+
+            if (i ==0 || j == divisions-1) {
+                addVerticeToList(*list,posX,0,posZ);
+                addVerticeToList(*list,posX,0,posZ+part);
+                addVerticeToList(*list,posX+part,0,posZ+part);
+            }
         }
     }
+
+    writeFile(*list,"plane.3d");
+
+    ::list<float> vertices= readFile("plane.3d");
+
+    drawList(vertices);
+
 }
+
+
 
 
 void drawBox (float length, float divisions){
-    float initX = - (length * divisions) / 2;
+    float part = length/divisions;
+    float halfAltura = length/2;
+    float initX = - halfAltura;
     float initZ = initX;
-    float halfAltura = length*divisions/2;
+
+    // Y Constante
     for (int i = 0;i < divisions;i++){
         for (int j = 0;j < divisions;j++){
-            float posX = initX + i * length;
-            float posZ = initZ + j * length;
+            float posX = initX + i * part;
+            float posZ = initZ + j * part;
+            float nextPosX = posX + part;
+            float nextPosZ = posZ + part;
             glBegin(GL_TRIANGLES);
-            glVertex3f(posX+length,halfAltura,posZ+length);
-            glVertex3f(posX+length,halfAltura,posZ);
+            glVertex3f(nextPosX,halfAltura,nextPosZ);
+            glVertex3f(nextPosX,halfAltura,posZ);
             glVertex3f(posX,halfAltura,posZ);
 
             glVertex3f(posX,halfAltura,posZ);
-            glVertex3f(posX,halfAltura,posZ+length);
-            glVertex3f(posX+length,halfAltura,posZ+length);
+            glVertex3f(posX,halfAltura,nextPosZ);
+            glVertex3f(nextPosX,halfAltura,nextPosZ);
 
             glVertex3f(posX,-halfAltura,posZ);
-            glVertex3f(posX+length,-halfAltura,posZ);
-            glVertex3f(posX+length,-halfAltura,posZ+length);
+            glVertex3f(nextPosX,-halfAltura,posZ);
+            glVertex3f(nextPosX,-halfAltura,nextPosZ);
 
-            glVertex3f(posX+length,-halfAltura,posZ+length);
-            glVertex3f(posX,-halfAltura,posZ+length);
+            glVertex3f(nextPosX,-halfAltura,nextPosZ);
+            glVertex3f(posX,-halfAltura,nextPosZ);
             glVertex3f(posX,-halfAltura,posZ);
             glEnd();
         }
     }
-
+    // X constante
     for (int i = 0; i < divisions;i++){
         for (int j = 0; j < divisions;j++){
-            float posY = halfAltura - i * length;
-            float posZ = initZ + j * length;
+            float posY = halfAltura - i * part;
+            float posZ = initZ + j * part;
+            float netxPosZ = posZ + part;
+            float nextPosY=posY-part;
             glBegin(GL_TRIANGLES);
-            glVertex3f(initX,posY, posZ+length);
+            glVertex3f(initX,posY, netxPosZ);
             glVertex3f(initX,posY, posZ);
-            glVertex3f(initX,posY-length, posZ);
+            glVertex3f(initX,nextPosY, posZ);
 
-            glVertex3f(initX, posY, posZ + length);
-            glVertex3f(initX, posY - length, posZ);
-            glVertex3f(initX, posY - length, posZ + length);
+            glVertex3f(initX, posY, posZ + part);
+            glVertex3f(initX, nextPosY, posZ);
+            glVertex3f(initX, nextPosY, netxPosZ);
 
-            glVertex3f(-initX,posY-length, posZ);
+            glVertex3f(-initX,nextPosY, posZ);
             glVertex3f(-initX,posY, posZ);
-            glVertex3f(-initX,posY, posZ+length);
+            glVertex3f(-initX,posY, netxPosZ);
 
-            glVertex3f(-initX, posY - length, posZ + length);
-            glVertex3f(-initX, posY - length, posZ);
-            glVertex3f(-initX, posY, posZ + length);
+            glVertex3f(-initX, nextPosY, netxPosZ);
+            glVertex3f(-initX, nextPosY, posZ);
+            glVertex3f(-initX, posY, netxPosZ);
             glEnd();
         }
     }
-
+    //Z constante
     for (int i = 0; i < divisions;i++){
         for (int j = 0; j < divisions;j++){
-            float posY = halfAltura - i * length;
-            float posX = initX + j * length;
+            float posY = halfAltura - i * part;
+            float posX = initX + j * part;
+            float nextPosY=posY-part;
+            float nextPosX=posX+part;
             glBegin(GL_TRIANGLES);
-            glVertex3f(posX,posY-length, initZ);
+            glVertex3f(posX,nextPosY, initZ);
             glVertex3f(posX,posY, initZ);
-            glVertex3f(posX + length,posY, initZ);
+            glVertex3f(nextPosX,posY, initZ);
 
-            glVertex3f(posX+length, posY - length, initZ);
-            glVertex3f(posX, posY - length, initZ);
-            glVertex3f(posX+length, posY, initZ);
+            glVertex3f(nextPosX, nextPosY, initZ);
+            glVertex3f(posX, nextPosY, initZ);
+            glVertex3f(nextPosX, posY, initZ);
 
-            glVertex3f(posX + length,posY, -initZ);
+            glVertex3f(posX + part,posY, -initZ);
             glVertex3f(posX,posY, -initZ);
-            glVertex3f(posX,posY-length, -initZ);
+            glVertex3f(posX,nextPosY, -initZ);
 
-            glVertex3f(posX+length, posY, -initZ);
-            glVertex3f(posX, posY - length, -initZ);
-            glVertex3f(posX+length, posY - length, -initZ);
+            glVertex3f(nextPosX, posY, -initZ);
+            glVertex3f(posX, nextPosY, -initZ);
+            glVertex3f(nextPosX, nextPosY, -initZ);
             glEnd();
         }
     }
@@ -290,11 +356,32 @@ void renderScene(void) {
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // set the camera
+    glMatrixMode(GL_PROJECTION);
+    // Load Identity Matrix
     glLoadIdentity();
-    gluLookAt(radius*cos(betaCamera)* sin(alphaCamera),radius*sin(betaCamera), radius*cos(betaCamera)* cos(alphaCamera),
-              0,0,0,
-              0.0f,1.0f,0.0f);
+
+    // Set the viewport to be the entire window
+    //glViewport(0, 0, 500,500);
+
+    // Set perspective
+    gluPerspective(40.0f ,1, 1.0f ,1000.0f);
+
+    // return to the model view matrix mode
+    glMatrixMode(GL_MODELVIEW);
+
+    // set the camera
+    //glMatrixMode(GL_MODELVIEW);
+
+
+    glLoadIdentity();
+    gluLookAt(5,5,3,0,0,0,0.0f,1.0f,0.0f);
+
+
+    //gluLookAt(radius*cos(betaCamera)* sin(alphaCamera),radius*sin(betaCamera), radius*cos(betaCamera)* cos(alphaCamera),
+    //          0,0,0,
+    //          0.0f,1.0f,0.0f);
+
+
 
     glRotatef(angleY,0,1,0);
     glRotatef(angleX,1,0,0);
@@ -320,11 +407,19 @@ void renderScene(void) {
 
 
     //drawCylinder(1,2,1000);
-    //drawPlane(0.5,20);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    drawCone(2,3,50,50);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    //drawBox(0.1,25);
+    //glTranslatef(0,1,0);
+    //drawPlane(2,10);
+    //glTranslatef(0,-2,0);
+    //glRotatef(180,1,0,1);
+    //drawPlane(2,10);
+    //glTranslatef(1,-1,0);
+    //glRotatef(180,1,1,0);
+    drawPlane(1,25);
+    //glColor3f(1.0f, 1.0f, 1.0f);
+    //drawCone(1,2,4,3);
+    //drawSphere(1,20,10);
+    //glColor3f(1.0f, 0.0f, 0.0f);
+    //drawBox(1,2);
     // End of frame
     glutSwapBuffers();
 }
@@ -371,7 +466,7 @@ int main(int argc, char **argv) {
 
 // Required callback registry
     glutDisplayFunc(renderScene);
-    glutReshapeFunc(changeSize);
+    //glutReshapeFunc(changeSize);
 
 // Callback registration for keyboard processing
     glutKeyboardFunc(processKeys);
@@ -386,3 +481,27 @@ int main(int argc, char **argv) {
 
     return 1;
 }
+
+
+/*
+int main(){
+    xmlFunc();
+    readXml();
+    /*
+    XMLDocument xmlDoc;
+    XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
+    XMLCheckResult(eResult);
+    XMLNode * pRoot = xmlDoc.FirstChild();
+    XMLElement * pElement = pRoot->FirstChildElement("group");
+    if (pElement == nullptr) return XML_ERROR_PARSING_ELEMENT;
+
+    const char * szAttributeText = nullptr;
+    szAttributeText = pElement->GetText();
+    if (szAttributeText == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    std::string strOutMonth = szAttributeText;
+    printf("element is %s\n",AttributeText);
+    XMLCheckResult(eResult);
+
+}
+ */
+

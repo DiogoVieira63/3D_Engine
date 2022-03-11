@@ -15,6 +15,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_executable(${PROJECT_NAME} main.cpp tinyxml2.h tinyxml2.cpp)
 
+add_executable(xml xmlParser.cpp xmlParser.h tinyxml2.h tinyxml2.cpp)
+
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
