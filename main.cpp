@@ -165,8 +165,6 @@ void drawSphere(float radius, int slices,int stacks){
             glEnd();
         }
     }
-
-
 }
 void writeVerticetoFile(std::ofstream& file, float x,float y, float z){
     file << x << " " << y << " " << z << '\n';
@@ -346,8 +344,6 @@ void drawBox (float length, float divisions){
             glEnd();
         }
     }
-
-
 }
 
 
