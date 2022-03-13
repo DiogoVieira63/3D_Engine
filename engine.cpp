@@ -1,8 +1,7 @@
 //
 // Created by diogo on 12/03/22.
 //
-
-#include "engine.h"
+#include <list>
 #include "tinyxml2.h"
 #include <iostream>
 
@@ -30,6 +29,8 @@ list<char*>files;
 
 
 list<list<float>>listaPonto;
+
+
 
 void drawList (){
     glColor3f(1,1,1);
@@ -94,7 +95,6 @@ void renderScene(void) {
 
     drawList();
 
-    //drawSphere(1,10,10);
     glutSwapBuffers();
 }
 
@@ -104,8 +104,11 @@ void renderScene(void) {
 #endif
 
 void convertToSpherical(){
-    alpha = atan(posX/posZ);
-    beta = atan((posY*sin(alpha))/posX);
+    if (posX==0)posX=0.0000001;
+    if (posY==0)posY=0.0000001;
+    if (posZ==0)posZ=0.0000001;
+    alpha = atan(posX/posZ) ;
+    beta = tan((posY*sin(alpha))/posX);
     radius = posY/sin(beta);
 }
 
@@ -172,7 +175,6 @@ int readXml(const char* filename){
         printf("file -> %s\n",file);
         pElement3 = pElement3->NextSiblingElement("model");
     }
-    printf("end\n");
     return 1;
 
     //XMLCheckResult(eResult);
@@ -263,7 +265,6 @@ int main(int argc, char **argv) {
     if(readXml(filename) == XML_ERROR_PARSING_ELEMENT){
         printf("Erro ao ler %s.\n",filename);
     }
-    printf("size is %zu\n",files.size());
 
 
     list<char*>::iterator it;
@@ -274,7 +275,6 @@ int main(int argc, char **argv) {
         listaPonto.push_back(list);
     }
 
-    printf("size is %zu\n",listaPonto.size());
 
 
 

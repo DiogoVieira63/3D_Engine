@@ -5,7 +5,6 @@
 #include <fstream>
 #include <list>
 #include <iterator>
-#include "generator.h"
 #include <cstring>
 
 using namespace std;
@@ -57,6 +56,7 @@ list<float>* getPointsPlane (float length,int divisions){
             addVerticeToList(*list, posX + part, 0, posZ);
             addVerticeToList(*list, posX, 0, posZ);
 
+
             if (i ==0 || j == divisions-1) {
                 addVerticeToList(*list,posX,0,posZ);
                 addVerticeToList(*list,posX,0,posZ+part);
@@ -64,7 +64,6 @@ list<float>* getPointsPlane (float length,int divisions){
             }
         }
     }
-
     return list;
 }
 
@@ -93,11 +92,13 @@ list<float>* getPointsCone(float r, float height, int slices,int stacks) {
             addVerticeToList(*list,rDown* sin(angle), heightDown, rDown * cos(angle));
             addVerticeToList(*list,rDown* sin(nextAngle),heightDown,rDown* cos(nextAngle));
             addVerticeToList(*list,rUp* sin(nextAngle), heightUP, rUp* cos(nextAngle));
+
         }
 
         addVerticeToList(*list,r * sin(nextAngle), initialHeight, r * cos(nextAngle));
         addVerticeToList(*list,r * sin(angle), initialHeight, r * cos(angle));
         addVerticeToList(*list,0, initialHeight, 0);
+
     }
     return list;
 }
@@ -128,6 +129,7 @@ list<float>* getPointsSphere(float radius, int slices,int stacks){
             addVerticeToList(*list,radius* cos(angleUp)*sin(nextAngle),radius* sin(angleUp), radius * cos(nextAngle)* cos(angleUp));
             addVerticeToList(*list,radius* cos(angleUp)*sin(angle),radius* sin(angleUp),radius* cos(angle)* cos(angleUp));
             addVerticeToList(*list,radius* cos(angleDown)*sin(nextAngle), radius* sin(angleDown), radius* cos(nextAngle)* cos(angleDown));
+
         }
     }
     return list;
@@ -263,7 +265,6 @@ list<float>* getPointsCylinder(float r, float height, int slices, int stacks) {
             addVerticeToList(*list, r * sin(angle), heightUp, r * cos(angle));
             addVerticeToList(*list, r * sin(nextAngle), heightDown, r * cos(nextAngle));
 
-
         }
     }
     return list;
@@ -282,15 +283,15 @@ int main(int argc, char **argv){
         if(!strcmp(argv[1],"help")){
             printf("Graphical primitives available:\n\n");
             printf("Plane (a square in the XZ plane, centred in the origin, subdivided in both X and Z directions\n");
-            printf("Example ->./generator plane length division filename):\n\t->./generator plane 1 3 plane.3d\n");
+            printf("Example ->./generator plane [length] [division] [filename]\n");
             printf("\nBox (requires dimension, and the number of divisions per edge)\n");
-            printf("Example ->./generator box length division filename:\n\t->./generator box 2 3 box.3d\n");
+            printf("Example ->./generator box [length] [division] [filename]\n");
             printf("\nSphere (requires radius, slices and stacks)\n");
-            printf("Example ->./generator sphere radius slices stacks filename\n\t->./generator sphere 1 10 10 sphere.3d\n");
+            printf("Example ->./generator sphere [radius] [slices] [stacks] [filename]\n");
             printf("\nCone (requires bottom radius, height, slices and stacks)\n");
-            printf("Example ->./generator cone radius height slices stacks filename\n\t->./generator cone 1 2 4 3 cone.3d\n");
+            printf("Example ->./generator cone [radius] [height] [slices] [stacks] [filename]\n");
             printf("\nCylinder (requires radius, height, slices and stacks)\n");
-            printf("Example ->./generator cylinder radius height slices stacks filename\n\t->./generator cylinder 1 2 4 3 cylinder.3d\n");
+            printf("Example ->./generator cylinder [radius] [height] [slices] [stacks] [filename]\n");
         }
         else printErro("nº de argumentos inválido");
         return 0;
