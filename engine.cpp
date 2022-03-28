@@ -11,7 +11,7 @@
 #include <math.h>
 #include <cstdio>
 #include <fstream>
-
+#include <vector>
 
 using namespace std;
 using namespace tinyxml2;
@@ -24,30 +24,84 @@ static float fov = 60,near=1, far=1000;
 
 static float radius, alpha, beta;
 
+class Ponto{
+    public:
+    float x;
+    float y;
+    float z;
+    Ponto(float x, float y, float z){
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+};
+
+
+class Transform{
+    public:
+    float x;
+    float y;
+    float z;
+};
+
+
+class Translation : public Transform{
+public:
+
+};
+
+class Scale : public Transform{
+public:
+
+};
+
+class Rotation: public Transform{
+public:
+    float angle;
+
+};
+
+
+class Model{
+    public:
+    vector<Ponto> pontos;
+
+    void addPonto(Ponto p){
+        pontos.push_back(p);
+    }
+
+    void setSize(int n){
+        pontos.reserve(n);
+    }
+};
+
+class Group{
+    public:
+    vector<Transform> transform;
+    vector<Model> models;
+    vector<Group> subGroups;
+};
+
 
 list<char*>files;
 
 
-list<list<float>>listaPonto;
+vector<Model>listaModels;
 
 
 
 void drawList (){
     glColor3f(1,1,1);
     glBegin(GL_TRIANGLES);
-    list<list<float>>::iterator itr;
-    for (itr=listaPonto.begin(); itr != listaPonto.end(); itr++)
+    list<Model>::iterator itr;
+    for (auto i = listaModels.cbegin();i != listaModels.cend();i++)
     {
-        list<float>tl=*itr;
+        Model m =*i;
         list<float>::iterator it;
-        for (it=tl.begin(); it != tl.end(); it++)
+        for (auto u = m.pontos.cbegin(); u != m.pontos.cend();u++)
         {
-            float x = *it;
-            ++it;
-            float y = *it;
-            ++it;
-            float z = *it;
-            glVertex3f(x,y,z);
+            Ponto p = *u;
+            glVertex3f(p.x,p.y,p.z);
         }
     }
     glEnd();
@@ -186,20 +240,23 @@ void addVerticeToList(list<float>&list, float x,float y, float z){
 
 }
 
-list<float> readFile(char* filename){
+Model readFile(char* filename){
     ifstream file(filename);
-    list<float> list;
     int nrVertices;
     file>>nrVertices;
+    Model m;
+    m.setSize(nrVertices);
     for (int i = 0; i < nrVertices;i++){
         // Output the text from the file
         float x,y,z;
         file >> x;
         file >> y;
         file >> z;
-        addVerticeToList(list,x,y,z);
+        Ponto p (x,y,z);
+        m.addPonto(p);
+        //addVerticeToList(list,x,y,z);
     }
-    return list;
+    return m;
 }
 
 void processKeys(unsigned char c, int xx, int yy) {
@@ -271,10 +328,9 @@ int main(int argc, char **argv) {
     for (it=files.begin(); it != files.end(); it++)
     {
         char* file = *it;
-        list<float>list = readFile(file);
-        listaPonto.push_back(list);
+        Model m = readFile(file);
+        listaModels.push_back(m);
     }
-
 
 
 
