@@ -13,6 +13,8 @@
 #include <fstream>
 #include <vector>
 
+#include <stack>
+
 using namespace std;
 using namespace tinyxml2;
 
@@ -21,6 +23,7 @@ static float posX, posY,posZ;
 static float lookAtX,lookAtY,lookAtZ;
 static float upX=0, upY=1,upZ=0;
 static float fov = 60,near=1, far=1000;
+
 
 static float radius, alpha, beta;
 
@@ -42,44 +45,100 @@ class Transform{
     float x;
     float y;
     float z;
+    Transform(float x, float y,float z){
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    virtual void doAction() = 0;
 };
 
 
 class Translation : public Transform{
 public:
+    Translation(float x, float y, float z) : Transform(x,y,z){}
 
+    void doAction() {
+        glTranslatef(x,y,z);
+        printf("T,%f|%f|%f\n",x,y,z);
+    }
 };
 
 class Scale : public Transform{
 public:
-
+    Scale(float x, float y, float z) : Transform(x,y,z){}
+    void doAction() {
+        glScalef(x,y,z);
+        printf("S,%f|%f|%f\n",x,y,z);
+    }
 };
 
 class Rotation: public Transform{
 public:
     float angle;
+    Rotation(float angle, float x,float y, float z) : Transform(x,y,z){
+        this->angle= angle;
+    }
 
+    void doAction() {
+        glRotatef(angle,x,y,z);
+        printf("R,%f|%f|%f|%f\n",angle,x,y,z);
+
+    }
+};
+
+class Color{
+public:
+    float R;
+    float G;
+    float B;
+    Color(){
+        R=1;
+        G=1;
+        B=1;
+    }
+    Color(float r,float g,float b){
+        R = r/255;
+        G = g/255;
+        B = b/255;
+    }
 };
 
 
 class Model{
     public:
     vector<Ponto> pontos;
+    string filename;
+
+
+    Model(const char*file ){
+        filename = string(file);
+    }
 
     void addPonto(Ponto p){
         pontos.push_back(p);
     }
 
     void setSize(int n){
+        pontos.clear();
         pontos.reserve(n);
     }
 };
 
 class Group{
     public:
-    vector<Transform> transform;
-    vector<Model> models;
-    vector<Group> subGroups;
+    vector<Transform*> transform;
+    vector<Model*> models;
+    vector<Group*> subGroups;
+    Color cor;
+
+    void addModel(Model *m){
+        models.push_back(m);
+    }
+
+
+
 };
 
 
@@ -88,23 +147,34 @@ list<char*>files;
 
 vector<Model>listaModels;
 
+Group *groupMain;
 
 
-void drawList (){
-    glColor3f(1,1,1);
-    glBegin(GL_TRIANGLES);
-    list<Model>::iterator itr;
-    for (auto i = listaModels.cbegin();i != listaModels.cend();i++)
+
+void drawGroup (Group *g){
+    glColor3f(g->cor.R,g->cor.G,g->cor.B);
+    printf("COLOR:%f|%f|%f",g->cor.R,g->cor.G,g->cor.B);
+
+    for(auto t : (*g).transform){
+        t->doAction();
+    }
+    printf("S %zu\n",g->models.size());
+    for (auto m : (*g).models)
     {
-        Model m =*i;
-        list<float>::iterator it;
-        for (auto u = m.pontos.cbegin(); u != m.pontos.cend();u++)
+        glBegin(GL_TRIANGLES);
+        for (auto p : (*m).pontos)
         {
-            Ponto p = *u;
             glVertex3f(p.x,p.y,p.z);
         }
+        glEnd();
+
     }
-    glEnd();
+    for (auto subg : (*g).subGroups){
+        printf("SUB\n");
+        glPushMatrix();
+        drawGroup(subg);
+        glPopMatrix();
+    }
 }
 
 
@@ -127,8 +197,8 @@ void renderScene(void) {
     //gluLookAt(2,5,1,0,0,0,0.0f,1.0f,0.0f);
 
 
-    glPolygonMode(GL_FRONT, GL_LINE);
-
+    glPolygonMode(GL_FRONT, GL_FILL);
+/*
     glBegin(GL_LINES);
     // X axis in red
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -143,12 +213,12 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
+*/
 
 
-
-
-    drawList();
-
+    glPushMatrix();
+    drawGroup(groupMain);
+    glPopMatrix();
     glutSwapBuffers();
 }
 
@@ -166,6 +236,96 @@ void convertToSpherical(){
     radius = posY/sin(beta);
 }
 
+
+Group* readGroup(XMLElement *pElement){
+
+
+    Group *group = new Group();
+    XMLElement *pElement2;
+    pElement2 = pElement->FirstChildElement("models");
+    XMLElement *pElement3;
+    if (pElement2 != nullptr) {
+        pElement3 = pElement2->FirstChildElement("model");
+        const char *file;
+        while (pElement3 != nullptr) {
+            file = pElement3->Attribute("file");
+            Model *m = new Model(file);
+            (*group).addModel(m);
+            pElement3 = pElement3->NextSiblingElement("model");
+
+            printf("%s\n",file);
+        }
+    }
+
+    pElement2 = pElement->FirstChildElement("color");
+    if (pElement2 != nullptr){
+        float r, g, b;
+        pElement2->QueryFloatAttribute("r", &r);
+        pElement2->QueryFloatAttribute("g", &g);
+        pElement2->QueryFloatAttribute("b", &b);
+        Color cor(r,g,b);
+
+        (*group).cor = cor;
+    }
+
+
+    pElement2 = pElement->FirstChildElement("transform");
+    if (pElement2 != nullptr) {
+        pElement3 = pElement2->FirstChildElement();
+        while(pElement3 != nullptr) {
+            const char *transform = pElement3->Name();
+            printf("%s\n",transform);
+            if (!strcmp(transform, "rotate")) {
+                float x, y, z, angle;
+                pElement3->QueryFloatAttribute("x", &x);
+                pElement3->QueryFloatAttribute("y", &y);
+                pElement3->QueryFloatAttribute("z", &z);
+                pElement3->QueryFloatAttribute("angle", &angle);
+                Rotation *rotate = new Rotation(angle, x, y, z);
+                (*group).transform.push_back(rotate);
+            }
+
+
+            if (!strcmp(transform, "translate")) {
+                float x, y, z;
+                pElement3->QueryFloatAttribute("x", &x);
+                pElement3->QueryFloatAttribute("y", &y);
+                pElement3->QueryFloatAttribute("z", &z);
+                printf("%f|%f|%f\n",x,y,z);
+
+                Translation *translate = new Translation(x, y, z);
+                (*group).transform.push_back(translate);
+            }
+
+            if (!strcmp(transform, "scale")) {
+                float x, y, z;
+                pElement3->QueryFloatAttribute("x", &x);
+                pElement3->QueryFloatAttribute("y", &y);
+                pElement3->QueryFloatAttribute("z", &z);
+                Scale *scale = new Scale(x, y, z);
+                (*group).transform.push_back(scale);
+            }
+            pElement3 = pElement3->NextSiblingElement();
+        }
+    }
+
+
+    pElement2 = pElement->FirstChildElement("group");
+
+    while (pElement2 != nullptr){
+        printf("GROUP\n");
+        Group* subGroup = readGroup(pElement2);
+        (*group).subGroups.push_back(subGroup);
+        pElement2 = pElement2->NextSiblingElement("group");
+    }
+
+
+    return group;
+
+}
+
+
+
 int readXml(const char* filename){
     XMLDocument xmlDoc;
     xmlDoc.LoadFile(filename);
@@ -175,6 +335,8 @@ int readXml(const char* filename){
     XMLElement * pElement = pRoot->FirstChildElement("camera");
     XMLElement *pElement2 = pElement->FirstChildElement("position");
 
+
+
     if (pElement2 == nullptr) return XML_ERROR_PARSING_ELEMENT;
     error =  pElement2->QueryFloatAttribute("x",&posX);
     XMLCheckResult(error);
@@ -182,6 +344,8 @@ int readXml(const char* filename){
     XMLCheckResult(error);
     error= pElement2->QueryFloatAttribute("z",&posZ);
     XMLCheckResult(error);
+
+
 
     convertToSpherical();
 
@@ -194,6 +358,7 @@ int readXml(const char* filename){
     XMLCheckResult(error);
     error= pElement2->QueryFloatAttribute("z",&lookAtZ);
     XMLCheckResult(error);
+
 
 
     pElement2 = pElement->FirstChildElement("up");
@@ -216,19 +381,13 @@ int readXml(const char* filename){
         XMLCheckResult(error);
     }
 
+
+
+
     pElement = pRoot->FirstChildElement("group");
-    if (pElement == nullptr) return XML_ERROR_PARSING_ELEMENT;
-    pElement2 = pElement->FirstChildElement("models");
-    if (pElement2 == nullptr) return XML_ERROR_PARSING_ELEMENT;
-    XMLElement *pElement3 = pElement2->FirstChildElement("model");
-    if (pElement3 == nullptr) return XML_ERROR_PARSING_ELEMENT;
-    while (pElement3 != nullptr){
-        const char* file = pElement3->Attribute("file");
-        if(file == nullptr)return 0;
-        files.push_back(strdup(file));
-        printf("file -> %s\n",file);
-        pElement3 = pElement3->NextSiblingElement("model");
-    }
+
+    groupMain = readGroup(pElement);
+
     return 1;
 
     //XMLCheckResult(eResult);
@@ -240,12 +399,13 @@ void addVerticeToList(list<float>&list, float x,float y, float z){
 
 }
 
-Model readFile(char* filename){
+void readFile(Model *m){
+    string filename = (*m).filename;
     ifstream file(filename);
     int nrVertices;
     file>>nrVertices;
-    Model m;
-    m.setSize(nrVertices);
+    (*m).setSize(nrVertices);
+    printf("->%d %s\n",nrVertices,filename.c_str());
     for (int i = 0; i < nrVertices;i++){
         // Output the text from the file
         float x,y,z;
@@ -253,10 +413,9 @@ Model readFile(char* filename){
         file >> y;
         file >> z;
         Ponto p (x,y,z);
-        m.addPonto(p);
+        (*m).addPonto(p);
         //addVerticeToList(list,x,y,z);
     }
-    return m;
 }
 
 void processKeys(unsigned char c, int xx, int yy) {
@@ -309,6 +468,24 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+void readModels(Group *g){
+    printf("Msize is %zu\n", (*g).models.size());
+
+    for (auto m : (*g).models) {
+        printf("HERE\n");
+        //printf("SIZE %zu | %s \n",(*m).pontos.size(),(*m).filename.c_str());
+        readFile(m);
+    }
+
+    printf("size is %zu\n", (*g).subGroups.size());
+
+
+    for(auto g1 : g->subGroups){
+        printf("DONE\n");
+        readModels(g1);
+    }
+}
+
 int main(int argc, char **argv) {
 
 
@@ -324,15 +501,18 @@ int main(int argc, char **argv) {
     }
 
 
-    list<char*>::iterator it;
-    for (it=files.begin(); it != files.end(); it++)
-    {
-        char* file = *it;
-        Model m = readFile(file);
-        listaModels.push_back(m);
-    }
+
+    readModels(groupMain);
+/*
+        for (auto i = g.models.cbegin(); i != g.models.cend(); i++) {
+            printf("HERE\n");
+            Model *m = *i;
+            //printf("SIZE %zu | %s \n",(*m).pontos.size(),(*m).filename.c_str());
+            readFile(m);
+        }
 
 
+*/
 
     // init GLUT and the window
     glutInit(&argc, argv);
