@@ -1,0 +1,121 @@
+<world>
+    <camera>
+        <position x="60" y="5" z="60"/>
+        <lookAt x="0" y="0" z="0"/>
+        <up x="0" y="1" z="0"/>
+        <projection fov="60" near="1" far="1000"/>
+    </camera>
+    <group>
+        <!--SOL-->
+		<color r="255" g="255" b="0"/>
+        <models>
+            <model file="sol.3d"/>
+        </models>
+        <!--Mercurio-->
+        <group>
+			<color r="150" g="26" b="26"/>
+            <transform>
+                <rotate angle="305" x="0" y="1" z="0"/>
+                <translate x="13.76" y="0" z="0"/>
+                <scale x="0.376" y="0.376" z="0.376"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Venus-->
+        <group>
+			<color r="230" g="230" b="230"/>
+            <transform>
+                <rotate angle="5" x="0" y="1" z="0"/>
+                <translate x="14.44" y="0" z="0"/>
+                <scale x="0.949" y="0.949" z="0.949"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Terra-->
+        <group>
+			<color r="47" g="106" b="105"/>
+            
+            <transform>
+                <rotate angle="105" x="0" y="1" z="0"/>
+                <translate x="16" y="0" z="0"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+            <group>
+                <color r="100" g="106" b="105"/>
+                <transform>
+			        <translate x="0" y="0.5" z="0.5"/>
+			        <scale x="0.2" y="0.2" z="0.2"/>
+                </transform>
+			    <models>
+			    	<model file="sphere.3d"/>
+			    </models>
+		    </group>
+        </group>
+        <!--Marte-->
+        <group>
+			<color r="153" g="61" b="0"/>
+            <transform>
+                <rotate angle="215" x="0" y="1" z="0"/>
+                <translate x="17" y="0" z="0"/>
+                <scale x="0.533" y="0.533" z="0.533"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Jupiter-->
+        <group>
+			<color r="176" g="127" b="53"/>
+            <transform>
+                <rotate angle="35" x="0" y="1" z="0"/>
+                <translate x="24.4" y="0" z="0"/>
+                <scale x="11.2" y="11.2" z="11.2"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Saturno-->
+        <group>
+			<color r="176" g="143" b="54"/>
+            <transform>
+                <rotate angle="300" x="0" y="1" z="0"/>
+                <translate x="43" y="0" z="0"/>
+                <scale x="9.46" y="9.46" z="9.46"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Urano-->
+        <group>
+			<color r="85" g="128" b="170"/>
+            <transform>
+                <rotate angle="190" x="0" y="1" z="0"/>
+                <translate x="61" y="0" z="0"/>
+                <scale x="4.06" y="4.06" z="4.06"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+        <!--Neptuno-->
+        <group>
+			<color r="54" g="10" b="150"/>
+            <transform>
+                <rotate angle="5" x="0" y="1" z="0"/>
+                <translate x="80" y="0" z="0"/>
+                <scale x="3.88" y="3.88" z="3.88"/>
+            </transform>
+            <models>
+                <model file="sphere.3d"/>
+            </models>
+        </group>
+    </group>
+</world>
