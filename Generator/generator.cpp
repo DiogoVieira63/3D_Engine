@@ -37,8 +37,6 @@ void addVerticeToList(list<float>&list, float x,float y, float z){
 }
 
 
-
-
 list<float>* getPointsPlane (float length,int divisions){
 
     float inicial_posX = - length/2;
@@ -270,6 +268,51 @@ list<float>* getPointsCylinder(float r, float height, int slices, int stacks) {
     return list;
 }
 
+list<float>* getPointsTorus (float raio_in, float raio_out, int slices, int stacks){
+    float delta1= 2* M_PI / slices;
+    float delta2= 2* M_PI / stacks;
+    float phi = 0;
+    float theta=0;
+
+    list<float> *list = new ::list<float>;
+
+
+    for (int i = 0; i < slices; ++i) {
+        for (int j = 0; j < stacks; ++j) {
+            (*list).push_back((raio_in + raio_out * cos(phi)) * cos(theta));
+            (*list).push_back((raio_in + raio_out * cos(phi))*sin(theta));
+            (*list).push_back(raio_out * sin(phi));
+
+            (*list).push_back((raio_in +raio_out * cos(phi)) * cos(theta + delta1));
+            (*list).push_back((raio_in + raio_out * cos(phi)) * sin(theta + delta1));
+            (*list).push_back(raio_out * sin(phi));
+
+            (*list).push_back((raio_in +raio_out * cos(phi + delta2)) * cos(theta+delta1));
+            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta+delta1));
+            (*list).push_back(raio_out * sin(phi+delta2));
+
+            (*list).push_back((raio_in +raio_out * cos(phi+delta2)) * cos(theta+delta1));
+            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta+delta1));
+            (*list).push_back(raio_out * sin(phi+delta2));
+
+            (*list).push_back((raio_in +raio_out * cos(phi + delta2)) * cos(theta));
+            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta));
+            (*list).push_back(raio_out * sin(phi+delta2));
+
+            (*list).push_back((raio_in +raio_out * cos(phi)) * cos(theta));
+            (*list).push_back((raio_in + raio_out * cos(phi))*sin(theta));
+            (*list).push_back(raio_out * sin(phi));
+
+            phi = delta2 * (j+1);
+        }
+        theta = delta1 * (i+1);
+
+    }
+    return list;
+
+}
+
+
 
 void printErro(const string& str){
     cout << "Erro:" <<str << "\n";
@@ -292,6 +335,8 @@ int main(int argc, char **argv){
             printf("Example ->./generator cone [radius] [height] [slices] [stacks] [filename]\n");
             printf("\nCylinder (requires radius, height, slices and stacks)\n");
             printf("Example ->./generator cylinder [radius] [height] [slices] [stacks] [filename]\n");
+            printf("\nTorus (requires radius_in, radius_out, slices and stacks)\n");
+            printf("Example ->./generator cylinder [radius_in] [radius_out] [slices] [stacks] [filename]\n");
         }
         else printErro("nº de argumentos inválido");
         return 0;
@@ -385,6 +430,26 @@ int main(int argc, char **argv){
             int slices= std::stoi(argv[4]);
             int stacks= std::stoi(argv[5]);
             list<float> *list = getPointsCylinder(radius,height,slices,stacks);
+            char *filename = argv[6];
+            writeFile(*list,filename);
+            printf("%s gerado\n",filename);
+
+        }
+        catch (std::exception& ia){
+            printErro("Argumentos inválidos");
+        }
+    }
+    else if (!strcmp(primitive,"torus")){
+        try {
+            if (argc != 7){
+                printErro("nº de argumentos inválido");
+                return 0;
+            }
+            float radiusIn = std::stof(argv[2]);
+            float radiusOut = std::stof(argv[3]);
+            int slices= std::stoi(argv[4]);
+            int stacks= std::stoi(argv[5]);
+            list<float> *list = getPointsTorus(radiusIn,radiusOut,slices,stacks);
             char *filename = argv[6];
             writeFile(*list,filename);
             printf("%s gerado\n",filename);
