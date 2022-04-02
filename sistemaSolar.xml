@@ -1,6 +1,6 @@
 <world>
     <camera>
-        <position x="80" y="60" z="0"/>
+        <position x="80" y="60" z="0" rMax="250"/>
         <lookAt x="0" y="0" z="0"/>
         <up x="0" y="1" z="0"/>
         <projection fov="60" near="1" far="1000"/>
@@ -37,8 +37,7 @@
         </group>
         <!--Terra-->
         <group>
-			<color r="47" g="106" b="105"/>
-            
+			<color r="4" g="137" b="232"/> 
             <transform>
                 <rotate angle="30" x="0" y="1" z="0"/>
                 <translate x="16" y="0" z="0"/>
@@ -76,10 +75,10 @@
             <models>
                 <model file="asteroid.3d"/>
             </models>
-            <random units="500">
+            <random units="1000">
                 <transform>
                     <rotate angleR="360" x="0" y="1" z="0"/>
-                    <translate xR="5" yR="2" z="18"/>
+                    <translate xR="7" yR="3" z="18"/>
                 </transform>
             </random>
         </group>
@@ -238,6 +237,83 @@
 			    	<model file="sphere.3d"/>
 			    </models>
 		    </group>
+        </group>  
+        <!--Estrelas--> 
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="0" y="-250" z="-250"/>
+                    <translate x="-250" yR="500" zR="500"/>
+                    <rotate angle="90" x="0" y="0" z="1"/>
+                </transform>
+            </random>
+        </group>
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="0" y="-250" z="-250"/>
+                    <translate x="250" yR="500" zR="500"/>
+                    <rotate angle="90" x="0" y="0" z="1"/>
+                </transform>
+            </random>
+        </group>
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="-250" y="-250" z="0"/>
+                    <translate xR="500" yR="500" z="250"/>
+                    <rotate angle="90" x="1" y="0" z="0"/>
+                </transform>
+            </random>
+        </group>
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="-250" y="-250" z="0"/>
+                    <translate xR="500" yR="500" z="-250"/>
+                    <rotate angle="90" x="1" y="0" z="0"/>
+                </transform>
+            </random>
+        </group>
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="-250" y="0" z="-250"/>
+                    <translate xR="500" y="-250" zR="500"/>
+                </transform>
+            </random>
+        </group>
+        <group>
+        	<models>
+				<model file="star.3d"/>
+			</models>
+            <color r="255" g="255" b="255"/>
+            <random units="100">
+                <transform>
+                    <translate x="-250" y="0" z="-250"/>
+                    <translate xR="500" y="250" zR="500"/>
+                </transform>
+            </random>
         </group>
     </group>
 </world>

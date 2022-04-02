@@ -36,32 +36,39 @@ static float fov = 60, near = 1, far = 1000;
 static int drawMode = 0;
 
 
-static float radius, alpha, beta;
+static float radius, alpha, beta,radiusMax;
+
+
+map<string, vector<Ponto>> mapFilesPontos;
 
 
 Group *groupMain;
 
 
 void drawGroup(Group *g) {
+    glPushMatrix();
     if (g->cor.R != -1) glColor3f(g->cor.R, g->cor.G, g->cor.B);
-
 
     for (auto t: (*g).transform) {
         t->doAction();
     }
-    for (auto m: (*g).models) {
-        glBegin(GL_TRIANGLES);
-        for (auto p: (*m).pontos) {
-            glVertex3f(p.x, p.y, p.z);
-        }
-        glEnd();
+    if(!(*g).isRandom) {
+        for (auto m: (*g).models) {
+            glBegin(GL_TRIANGLES);
+            for (auto p: (*m).pontos) {
+                glVertex3f(p.x, p.y, p.z);
+            }
+            glEnd();
 
+        }
     }
+
+    if (!(*g).subGroups.empty())printf("SIZE - %zu\n", (*g).subGroups.size());
     for (auto subg: (*g).subGroups) {
-        glPushMatrix();
         drawGroup(subg);
-        glPopMatrix();
     }
+    glPopMatrix();
+
 }
 
 
@@ -77,7 +84,6 @@ void renderScene(void) {
     gluLookAt(radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha),
               lookAtX, lookAtY, lookAtZ,
               upX, upY, upZ);
-
 
 
     if (drawMode == 0) glPolygonMode(GL_FRONT, GL_FILL);
@@ -113,7 +119,6 @@ void renderScene(void) {
 #endif
 
 
-
 float randomMax(float max) {
     return static_cast <float> (rand()) / static_cast <float> (RAND_MAX / max);
 }
@@ -122,11 +127,53 @@ float randomMax(float max) {
 void queryAttrib(XMLElement *element, string query, float *res) {
     XMLError error = element->QueryFloatAttribute(query.c_str(), res);
     if (error != XML_SUCCESS) {
-        query+='R';
+        query += 'R';
         element->QueryFloatAttribute(query.c_str(), res);
         *res = randomMax(*res);
     }
 }
+
+
+void readTransform(XMLElement *pElement, Group *grupo) {
+    XMLElement *pElement3;
+    if (pElement != nullptr) {
+        pElement3 = pElement->FirstChildElement();
+        while (pElement3 != nullptr) {
+            const char *transform = pElement3->Name();
+            if (!strcmp(transform, "rotate")) {
+                float x, y, z, angle;
+                queryAttrib(pElement3, "x", &x);
+                queryAttrib(pElement3, "y", &y);
+                queryAttrib(pElement3, "z", &z);
+                queryAttrib(pElement3, "angle", &angle);
+
+                Rotation *rotate = new Rotation(angle, x, y, z);
+                (*grupo).addRotation(rotate);
+            }
+
+            if (!strcmp(transform, "translate")) {
+                float x, y, z;
+                queryAttrib(pElement3, "x", &x);
+                queryAttrib(pElement3, "y", &y);
+                queryAttrib(pElement3, "z", &z);
+                Translation *translate = new Translation(x, y, z);
+                (*grupo).addTranslation(translate);
+            }
+            if (!strcmp(transform, "scale")) {
+                float x, y, z;
+                queryAttrib(pElement3, "x", &x);
+                queryAttrib(pElement3, "y", &y);
+                queryAttrib(pElement3, "z", &z);
+                Scale *scale = new Scale(x, y, z);
+                (*grupo).addScale(scale);
+            }
+            pElement3 = pElement3->NextSiblingElement();
+        }
+    }
+
+
+}
+
 
 Group *readGroup(XMLElement *pElement) {
 
@@ -141,24 +188,51 @@ Group *readGroup(XMLElement *pElement) {
             file = pElement3->Attribute("file");
             Model *m = new Model(file);
             (*group).addModel(m);
+            if (mapFilesPontos.find(file) == mapFilesPontos.end()) {
+                vector<Ponto> pontos;
+                mapFilesPontos.insert(pair<string, vector<Ponto>>(file, pontos));
+            }
+
             pElement3 = pElement3->NextSiblingElement("model");
         }
     }
-
+/*
     pElement2 = pElement->FirstChildElement("random");
     int units = 1;
     if (pElement2 != nullptr) {
         pElement2->QueryIntAttribute("units", &units);
-        srand(63);
         pElement2 = pElement2->FirstChildElement("transform");
-    }
-    else
+    } else
         pElement2 = pElement->FirstChildElement("transform");
 
+ */
+    pElement2 = pElement->FirstChildElement("transform");
+    if (pElement2!= nullptr){
+        readTransform(pElement2,group);
+    }
+
+    pElement2 = pElement->FirstChildElement("random");
+    if (pElement2 != nullptr) {
+        int units;
+        pElement2->QueryIntAttribute("units", &units);
+        pElement2 = pElement2->FirstChildElement("transform");
+
+        (*group).isRandom = true;
+        for(int i = 0; i < units;i++) {
+            auto grupoAdd = new Group();
+            (*grupoAdd).models = (*group).models;
+            (*grupoAdd).cor = (*group).cor;
+            readTransform(pElement2, grupoAdd);
+            (*group).addSubGroup(grupoAdd);
+        }
+
+    }
+
+    /*
     if (pElement2 != nullptr) {
         for (int i = 0; i < units; i++) {
             auto *grupoAdd = group;
-            if (units > 1){
+            if (units > 1) {
                 grupoAdd = new Group();
                 (*grupoAdd).models = (*group).models;
                 (*grupoAdd).cor = (*group).cor;
@@ -201,6 +275,7 @@ Group *readGroup(XMLElement *pElement) {
                 (*group).addSubGroup(grupoAdd);
         }
     }
+     */
 
     pElement2 = pElement->FirstChildElement("color");
     if (pElement2 != nullptr) {
@@ -224,21 +299,20 @@ Group *readGroup(XMLElement *pElement) {
 }
 
 
-
 void convertToSpherical() {
     if (posX == 0)posX = 0.0000001;
     if (posY == 0)posY = 0.0000001;
     if (posZ == 0)posZ = 0.0000001;
     alpha = atan(posX / posZ);
     beta = tan((posY * sin(alpha)) / posX);
-    printf("BETA %f\n",beta);
-    if (beta >= M_PI/2)beta-= M_PI;
-    if (beta <= -M_PI/2)beta+= M_PI;
+    printf("BETA %f\n", beta);
+    if (beta >= M_PI / 2)beta -= M_PI;
+    if (beta <= -M_PI / 2)beta += M_PI;
     radius = posY / sin(beta);
 }
 
 
-int readCamera(XMLElement* pElement){
+int readCamera(XMLElement *pElement) {
     XMLError error;
     XMLElement *pElement2 = pElement->FirstChildElement("position");
 
@@ -249,6 +323,12 @@ int readCamera(XMLElement* pElement){
     XMLCheckResult(error);
     error = pElement2->QueryFloatAttribute("z", &posZ);
     XMLCheckResult(error);
+    error = pElement2->QueryFloatAttribute("rMax", &radiusMax);
+
+
+    if(error != XML_SUCCESS){
+        radiusMax= 500;
+    }
 
     convertToSpherical();
 
@@ -304,23 +384,26 @@ int readXml(const char *filename) {
 }
 
 
-
 void readFile(Model *m) {
-
-    if (!(*m).pontos.empty())return;
     string filename = (*m).filename;
+    auto par = mapFilesPontos.find(filename);
+    if (!par->second.empty()) {
+        (*m).pontos = par->second;
+        return;
+    }
     ifstream file(filename);
     int nrVertices;
     file >> nrVertices;
-    (*m).setSize(nrVertices);
+    par->second.reserve(nrVertices);
     for (int i = 0; i < nrVertices; i++) {
         float x, y, z;
         file >> x;
         file >> y;
         file >> z;
         Ponto p(x, y, z);
-        (*m).addPonto(p);
+        par->second.push_back(p);
     }
+    (*m).pontos = par->second;
 }
 
 void readModels(Group *g) {
@@ -335,13 +418,14 @@ void readModels(Group *g) {
 
 void processKeys(unsigned char c, int xx, int yy) {
 
-    if (c =='p' || c == 'P')drawMode = 1 - drawMode;
+    if (c == 'p' || c == 'P')drawMode = 1 - drawMode;
     if (c == '1')radius += 2;
     if (c == '2')radius -= 2;
 
-    if (radius <= 0){
-        radius=1;
+    if (radius <= 0) {
+        radius = 1;
     }
+    if(radius >= radiusMax) radius = radiusMax;
 
 
     glutPostRedisplay();
@@ -402,7 +486,12 @@ int main(int argc, char **argv) {
 
     readXml(filename);
 
+    printf("Size is %lu\n", mapFilesPontos.size());
+
+    //listaModels.resize(mapFilesInt.size());
+    srand(63);
     readModels(groupMain);
+
 
     // init GLUT and the window
     glutInit(&argc, argv);

@@ -19,6 +19,7 @@ public:
     vector<Model *> models;
     vector<Group *> subGroups;
     Color cor;
+    bool  isRandom = false;
 
     void addModel(Model *m);
 

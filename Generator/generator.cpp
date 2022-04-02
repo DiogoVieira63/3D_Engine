@@ -54,11 +54,19 @@ list<float>* getPointsPlane (float length,int divisions){
             addVerticeToList(*list, posX + part, 0, posZ);
             addVerticeToList(*list, posX, 0, posZ);
 
+            addVerticeToList(*list, posX, 0, posZ);
+            addVerticeToList(*list, posX + part, 0, posZ);
+            addVerticeToList(*list, posX + part, 0, posZ + part);
+
 
             if (i ==0 || j == divisions-1) {
                 addVerticeToList(*list,posX,0,posZ);
                 addVerticeToList(*list,posX,0,posZ+part);
                 addVerticeToList(*list,posX+part,0,posZ+part);
+
+                addVerticeToList(*list,posX+part,0,posZ+part);
+                addVerticeToList(*list,posX,0,posZ+part);
+                addVerticeToList(*list,posX,0,posZ);
             }
         }
     }
