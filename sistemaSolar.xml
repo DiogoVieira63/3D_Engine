@@ -1,6 +1,6 @@
 <world>
     <camera>
-        <position x="80" y="60" z="0" rMax="250"/>
+        <position x="58" y="50" z="78" rMax="250"/>
         <lookAt x="0" y="0" z="0"/>
         <up x="0" y="1" z="0"/>
         <projection fov="60" near="1" far="1000"/>

@@ -1,10 +1,8 @@
 //
 // Created by diogo on 12/03/22.
 //
-#include <list>
 #include "../tinyxml2.h"
 #include "Ponto.h"
-#include "Transform.h"
 #include "Translation.h"
 #include "Scale.h"
 #include "Rotation.h"
@@ -63,16 +61,14 @@ void drawGroup(Group *g) {
         }
     }
 
-    if (!(*g).subGroups.empty())printf("SIZE - %zu\n", (*g).subGroups.size());
     for (auto subg: (*g).subGroups) {
         drawGroup(subg);
     }
     glPopMatrix();
-
 }
 
 
-void renderScene(void) {
+void renderScene() {
 
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -81,7 +77,10 @@ void renderScene(void) {
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
-    gluLookAt(radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha),
+    posX = radius * cos(beta) * sin(alpha);
+    posY = radius * sin(beta);
+    posZ = radius * cos(beta) * cos(alpha);
+    gluLookAt(posX, posY, posZ,
               lookAtX, lookAtY, lookAtZ,
               upX, upY, upZ);
 
@@ -89,33 +88,14 @@ void renderScene(void) {
     if (drawMode == 0) glPolygonMode(GL_FRONT, GL_FILL);
     if (drawMode == 1) glPolygonMode(GL_FRONT, GL_LINE);
 
-/*
-    glBegin(GL_LINES);
-    // X axis in red
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f( 100.0f, 0.0f, 0.0f);
-    // Y Axis in Green
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 100.0f, 0.0f);
-    // Z Axis in Blue
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 100.0f);
-    glEnd();
-*/
-
-
-    glPushMatrix();
     drawGroup(groupMain);
-    glPopMatrix();
+
     glutSwapBuffers();
 }
 
 
 #ifndef XMLCheckResult
-#define XMLCheckResult(a_eResult) if ((a_eResult) != XML_SUCCESS) { printf("Error: %i\n", a_eResult); return a_eResult; }
+#define XMLCheckResult(a_eResult) if ((a_eResult) != XML_SUCCESS) { return a_eResult; }
 #endif
 
 
@@ -196,16 +176,6 @@ Group *readGroup(XMLElement *pElement) {
             pElement3 = pElement3->NextSiblingElement("model");
         }
     }
-/*
-    pElement2 = pElement->FirstChildElement("random");
-    int units = 1;
-    if (pElement2 != nullptr) {
-        pElement2->QueryIntAttribute("units", &units);
-        pElement2 = pElement2->FirstChildElement("transform");
-    } else
-        pElement2 = pElement->FirstChildElement("transform");
-
- */
     pElement2 = pElement->FirstChildElement("transform");
     if (pElement2!= nullptr){
         readTransform(pElement2,group);
@@ -227,55 +197,6 @@ Group *readGroup(XMLElement *pElement) {
         }
 
     }
-
-    /*
-    if (pElement2 != nullptr) {
-        for (int i = 0; i < units; i++) {
-            auto *grupoAdd = group;
-            if (units > 1) {
-                grupoAdd = new Group();
-                (*grupoAdd).models = (*group).models;
-                (*grupoAdd).cor = (*group).cor;
-            }
-
-            pElement3 = pElement2->FirstChildElement();
-            while (pElement3 != nullptr) {
-                const char *transform = pElement3->Name();
-                if (!strcmp(transform, "rotate")) {
-                    float x, y, z, angle;
-                    queryAttrib(pElement3, "x", &x);
-                    queryAttrib(pElement3, "y", &y);
-                    queryAttrib(pElement3, "z", &z);
-                    queryAttrib(pElement3, "angle", &angle);
-
-                    Rotation *rotate = new Rotation(angle, x, y, z);
-                    (*grupoAdd).addRotation(rotate);
-                }
-
-                if (!strcmp(transform, "translate")) {
-                    float x, y, z;
-                    queryAttrib(pElement3, "x", &x);
-                    queryAttrib(pElement3, "y", &y);
-                    queryAttrib(pElement3, "z", &z);
-                    Translation *translate = new Translation(x, y, z);
-                    (*grupoAdd).addTranslation(translate);
-                }
-
-                if (!strcmp(transform, "scale")) {
-                    float x, y, z;
-                    queryAttrib(pElement3, "x", &x);
-                    queryAttrib(pElement3, "y", &y);
-                    queryAttrib(pElement3, "z", &z);
-                    Scale *scale = new Scale(x, y, z);
-                    (*grupoAdd).addScale(scale);
-                }
-                pElement3 = pElement3->NextSiblingElement();
-            }
-            if (units > 1)
-                (*group).addSubGroup(grupoAdd);
-        }
-    }
-     */
 
     pElement2 = pElement->FirstChildElement("color");
     if (pElement2 != nullptr) {
@@ -305,7 +226,6 @@ void convertToSpherical() {
     if (posZ == 0)posZ = 0.0000001;
     alpha = atan(posX / posZ);
     beta = tan((posY * sin(alpha)) / posX);
-    printf("BETA %f\n", beta);
     if (beta >= M_PI / 2)beta -= M_PI;
     if (beta <= -M_PI / 2)beta += M_PI;
     radius = posY / sin(beta);
@@ -316,7 +236,9 @@ int readCamera(XMLElement *pElement) {
     XMLError error;
     XMLElement *pElement2 = pElement->FirstChildElement("position");
 
-    if (pElement2 == nullptr) return XML_ERROR_PARSING_ELEMENT;
+    if (pElement2 == nullptr) {
+        throw ("Grupo camara não contém grupo obrigatório: position");
+    }
     error = pElement2->QueryFloatAttribute("x", &posX);
     XMLCheckResult(error);
     error = pElement2->QueryFloatAttribute("y", &posY);
@@ -325,16 +247,16 @@ int readCamera(XMLElement *pElement) {
     XMLCheckResult(error);
     error = pElement2->QueryFloatAttribute("rMax", &radiusMax);
 
-
-    if(error != XML_SUCCESS){
-        radiusMax= 500;
-    }
-
+    if (error != XML_SUCCESS)
+        radiusMax = 1000000;
     convertToSpherical();
 
-    pElement2 = pElement->FirstChildElement("lookAt");
-    if (pElement2 == nullptr) return XML_ERROR_PARSING_ELEMENT;
 
+
+    pElement2 = pElement->FirstChildElement("lookAt");
+    if (pElement2 == nullptr) {
+        throw string ("Grupo camara não contém grupo obrigatório: lookAt");
+    }
     error = pElement2->QueryFloatAttribute("x", &lookAtX);
     XMLCheckResult(error);
     error = pElement2->QueryFloatAttribute("y", &lookAtY);
@@ -343,55 +265,54 @@ int readCamera(XMLElement *pElement) {
     XMLCheckResult(error);
 
 
+
     pElement2 = pElement->FirstChildElement("up");
     if (pElement2 != nullptr) {
-        error = pElement2->QueryFloatAttribute("x", &upX);
-        XMLCheckResult(error);
-        error = pElement2->QueryFloatAttribute("y", &upY);
-        XMLCheckResult(error);
-        error = pElement2->QueryFloatAttribute("z", &upZ);
-        XMLCheckResult(error);
+        pElement2->QueryFloatAttribute("x", &upX);
+        pElement2->QueryFloatAttribute("y", &upY);
+        pElement2->QueryFloatAttribute("z", &upZ);
     }
 
     pElement2 = pElement->FirstChildElement("projection");
     if (pElement2 != nullptr) {
-        error = pElement2->QueryFloatAttribute("fov", &fov);
-        XMLCheckResult(error);
-        error = pElement2->QueryFloatAttribute("near", &near);
-        XMLCheckResult(error);
-        error = pElement2->QueryFloatAttribute("far", &far);
-        XMLCheckResult(error);
+        pElement2->QueryFloatAttribute("fov", &fov);
+        pElement2->QueryFloatAttribute("near", &near);
+        pElement2->QueryFloatAttribute("far", &far);
     }
-    return 1;
+    return 0;
 }
 
 int readXml(const char *filename) {
     XMLDocument xmlDoc;
-    xmlDoc.LoadFile(filename);
+    XMLError erro = xmlDoc.LoadFile(filename);
+    if (erro != XML_SUCCESS){
+        string s = "Ficheiro '" + string (filename) + "' não existe.";
+        throw string (s);
+    }
     XMLNode *pRoot = xmlDoc.FirstChild();
-    XMLError error;
 
     XMLElement *pElement = pRoot->FirstChildElement("camera");
-
     readCamera(pElement);
 
     pElement = pRoot->FirstChildElement("group");
-
     groupMain = readGroup(pElement);
 
-    return 1;
-
+    return 0;
 }
 
 
-void readFile(Model *m) {
+int readFile(Model *m) {
     string filename = (*m).filename;
     auto par = mapFilesPontos.find(filename);
     if (!par->second.empty()) {
         (*m).pontos = par->second;
-        return;
+        return 0;
     }
     ifstream file(filename);
+    if (file.fail()){
+        string s = "Ficheiro model '" + filename + "' não existe.";
+        throw (s);
+    }
     int nrVertices;
     file >> nrVertices;
     par->second.reserve(nrVertices);
@@ -404,6 +325,7 @@ void readFile(Model *m) {
         par->second.push_back(p);
     }
     (*m).pontos = par->second;
+    return 0;
 }
 
 void readModels(Group *g) {
@@ -422,14 +344,11 @@ void processKeys(unsigned char c, int xx, int yy) {
     if (c == '1')radius += 2;
     if (c == '2')radius -= 2;
 
-    if (radius <= 0) {
-        radius = 1;
-    }
+    if (radius <= 0) radius = 1;
+
     if(radius >= radiusMax) radius = radiusMax;
 
-
     glutPostRedisplay();
-
 }
 
 
@@ -474,6 +393,7 @@ void changeSize(int w, int h) {
 }
 
 
+
 int main(int argc, char **argv) {
 
 
@@ -484,13 +404,18 @@ int main(int argc, char **argv) {
 
     char *filename = argv[1];
 
-    readXml(filename);
+    try {
+        srand(63);
+        readXml(filename);
+        readModels(groupMain);
 
-    printf("Size is %lu\n", mapFilesPontos.size());
+    }
+    catch (string s){
+        printf("%s\n",s.c_str());
+        return 1;
+    }
 
-    //listaModels.resize(mapFilesInt.size());
-    srand(63);
-    readModels(groupMain);
+
 
 
     // init GLUT and the window
