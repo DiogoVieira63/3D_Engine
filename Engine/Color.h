@@ -14,8 +14,8 @@ public:
 
     Color() {
         R = -1;
-        G = 1;
-        B = 1;
+        G = -1;
+        B = -1;
     }
 
     Color(float r, float g, float b) {
@@ -23,6 +23,8 @@ public:
         G = g / 255;
         B = b / 255;
     }
+
+
 };
 
 

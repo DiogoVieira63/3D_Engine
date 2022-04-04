@@ -31,15 +31,13 @@ static float lookAtX, lookAtY, lookAtZ;
 static float upX = 0, upY = 1, upZ = 0;
 static float fov = 60, near = 1, far = 1000;
 
-static int drawMode = 0;
+static int drawMode = 0, eixos =0 ;
 
 
 static float radius, alpha, beta,radiusMax;
 
 
 map<string, vector<Ponto>> mapFilesPontos;
-
-
 Group *groupMain;
 
 
@@ -47,10 +45,10 @@ void drawGroup(Group *g) {
     glPushMatrix();
     if (g->cor.R != -1) glColor3f(g->cor.R, g->cor.G, g->cor.B);
 
-    for (auto t: (*g).transform) {
-        t->doAction();
-    }
     if(!(*g).isRandom) {
+        for (auto t: (*g).transform) {
+            t->doAction();
+        }
         for (auto m: (*g).models) {
             glBegin(GL_TRIANGLES);
             for (auto p: (*m).pontos) {
@@ -73,6 +71,25 @@ void renderScene() {
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+    if (eixos) {
+        glBegin(GL_LINES);
+        // X axis in red
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(100.0f, 0.0f, 0.0f);
+        // Y Axis in Green
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 100.0f, 0.0f);
+        // Z Axis in Blue
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 100.0f);
+        glEnd();
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+    }
 
     glMatrixMode(GL_MODELVIEW);
 
@@ -105,12 +122,15 @@ float randomMax(float max) {
 
 
 void queryAttrib(XMLElement *element, string query, float *res) {
-    XMLError error = element->QueryFloatAttribute(query.c_str(), res);
-    if (error != XML_SUCCESS) {
-        query += 'R';
-        element->QueryFloatAttribute(query.c_str(), res);
-        *res = randomMax(*res);
-    }
+    float num;
+    element->QueryFloatAttribute(query.c_str(), &num);
+    query += 'R';
+    float rand;
+    XMLError error = element->QueryFloatAttribute(query.c_str(), &rand);
+    if (error == XML_SUCCESS)
+        *res = num + randomMax(rand);
+    else
+        *res = num;
 }
 
 
@@ -181,12 +201,13 @@ Group *readGroup(XMLElement *pElement) {
         readTransform(pElement2,group);
     }
 
-    pElement2 = pElement->FirstChildElement("random");
-    if (pElement2 != nullptr) {
-        int units;
-        pElement2->QueryIntAttribute("units", &units);
-        pElement2 = pElement2->FirstChildElement("transform");
+    int units;
+    XMLError error = pElement->QueryIntAttribute("units", &units);
 
+
+
+    if (error == XML_SUCCESS) {
+        pElement2 = pElement->FirstChildElement("transform");
         (*group).isRandom = true;
         for(int i = 0; i < units;i++) {
             auto grupoAdd = new Group();
@@ -286,7 +307,7 @@ int readXml(const char *filename) {
     XMLDocument xmlDoc;
     XMLError erro = xmlDoc.LoadFile(filename);
     if (erro != XML_SUCCESS){
-        string s = "Ficheiro '" + string (filename) + "' não existe.";
+        string s = "Ficheiro '" + string (filename) + "': não existe ou erro ao ler.";
         throw string (s);
     }
     XMLNode *pRoot = xmlDoc.FirstChild();
@@ -341,6 +362,7 @@ void readModels(Group *g) {
 void processKeys(unsigned char c, int xx, int yy) {
 
     if (c == 'p' || c == 'P')drawMode = 1 - drawMode;
+    if (c == 'e' || c == 'E')eixos = 1 - eixos;
     if (c == '1')radius += 2;
     if (c == '2')radius -= 2;
 
