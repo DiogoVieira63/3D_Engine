@@ -11,9 +11,9 @@ PROJECT(class4)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(generator Generator/generator.cpp)
+add_executable(generator Generator/generator.cpp Utils/utils.cpp Utils/utils.h)
 
-add_executable(engine Engine/engine.cpp tinyxml2.cpp tinyxml2.h Engine/Ponto.h Engine/Transform.h Engine/Translation.h Engine/Scale.h Engine/Rotation.h Engine/Color.h Engine/Model.cpp Engine/Model.h Engine/Group.cpp Engine/Group.h)
+add_executable(engine Engine/engine.cpp tinyxml2.cpp tinyxml2.h Engine/Ponto.h Engine/Transform.h Engine/Translation.h Engine/Scale.h Engine/Rotation.h Engine/Color.h Engine/Model.cpp Engine/Model.h Engine/Group.cpp Engine/Group.h Utils/utils.cpp Utils/utils.h)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})

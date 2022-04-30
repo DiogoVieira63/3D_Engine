@@ -13,7 +13,7 @@ class Scale : public Transform {
 public:
     Scale(float x, float y, float z) : Transform(x, y, z) {}
 
-    void doAction() {
+    void doAction(float t) {
         glScalef(x, y, z);
     }
 };

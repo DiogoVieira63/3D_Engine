@@ -15,7 +15,7 @@ class Model {
 public:
     vector<Ponto> pontos;
     string filename;
-
+    pair<unsigned int,unsigned int> parArray;
 
     Model(const char *file);
 

@@ -6,12 +6,27 @@
 #include <list>
 #include <iterator>
 #include <cstring>
+#include <vector>
 
 using namespace std;
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <sstream>
+#include "../Engine/Ponto.h"
 
+void writeFile(vector<Ponto> vect, char *filename){
+    ofstream file;
+    file.open(filename);
+    int nrVertices = vect.size();
+    file << nrVertices << '\n';
+    for (Ponto p : vect){
+        file << p.x << ' ';
+        file << p.y << ' ';
+        file << p.z << ' ';
+        file << '\n';
+    }
+}
 
 
 void writeFile(list<float> list,char* filename){
@@ -36,49 +51,50 @@ void addVerticeToList(list<float>&list, float x,float y, float z){
     list.push_back(z);
 }
 
+void addTriangle(vector<Ponto> *vector,Ponto p0,Ponto p1,Ponto p2){
+    vector->push_back(p0);
+    vector->push_back(p1);
+    vector->push_back(p2);
 
-list<float>* getPointsPlane (float length,int divisions){
+}
+
+
+vector<Ponto> getPointsPlane (float length,int divisions){
 
     float inicial_posX = - length/2;
     float inicial_posZ = inicial_posX;
     float part = length/(float )divisions;
 
-    list<float> *list = new ::list<float>;
+    vector<Ponto>vector;
+
 
     for (int i = 0;i < divisions;i++){
+        float posX = inicial_posX + (float) i * part;
         for (int j = 0;j < divisions;j++){
-            float posX = inicial_posX + i * part;
-            float posZ = inicial_posZ + j * part;
+            float posZ = inicial_posZ + (float) j * part;
 
-            addVerticeToList(*list, posX + part, 0, posZ + part);
-            addVerticeToList(*list, posX + part, 0, posZ);
-            addVerticeToList(*list, posX, 0, posZ);
+            Ponto upNow = Ponto(posX, 0, posZ);
+            Ponto upNext = Ponto(posX + part, 0, posZ);
+            Ponto botNext = Ponto(posX + part, 0, posZ + part);
+            Ponto botNow = Ponto(posX, 0, posZ + part);
 
-            addVerticeToList(*list, posX, 0, posZ);
-            addVerticeToList(*list, posX + part, 0, posZ);
-            addVerticeToList(*list, posX + part, 0, posZ + part);
+            addTriangle(&vector,botNext,upNext,upNow);
+            addTriangle(&vector,upNow,upNext,botNext);
 
+            addTriangle(&vector,upNow,botNow,botNext);
+            addTriangle(&vector,botNext,botNow,upNow);
 
-            if (i ==0 || j == divisions-1) {
-                addVerticeToList(*list,posX,0,posZ);
-                addVerticeToList(*list,posX,0,posZ+part);
-                addVerticeToList(*list,posX+part,0,posZ+part);
-
-                addVerticeToList(*list,posX+part,0,posZ+part);
-                addVerticeToList(*list,posX,0,posZ+part);
-                addVerticeToList(*list,posX,0,posZ);
-            }
         }
     }
-    return list;
+    return vector;
 }
 
 
-list<float>* getPointsCone(float r, float height, int slices,int stacks) {
+vector<Ponto> getPointsCone(float r, float height, int slices,int stacks) {
     float anglePart = 2 * M_PI / slices;
     float heightPart = height/(float)stacks;
     float initialHeight =0;
-    list<float> *list = new ::list<float>;
+    vector<Ponto> vector;
 
     for (int i = 0; i < slices;i++) {
         float angle = ((float) i) * anglePart;
@@ -91,30 +107,34 @@ list<float>* getPointsCone(float r, float height, int slices,int stacks) {
             float heightUP = initialHeight + heightPart * (float)(j+1);
 
 
-            addVerticeToList(*list,rUp* sin(nextAngle),heightUP,rUp* cos(nextAngle));
-            addVerticeToList(*list,rUp* sin(angle),heightUP,rUp* cos(angle));
-            addVerticeToList(*list,rDown * sin(angle), heightDown, rDown * cos(angle));
+            Ponto upNext = Ponto(rUp* sin(nextAngle),heightUP,rUp* cos(nextAngle));
+            Ponto upNow = Ponto(rUp* sin(angle),heightUP,rUp* cos(angle));
+            Ponto downNow = Ponto(rDown* sin(angle),heightDown,rDown* cos(angle));
+            Ponto downNext = Ponto(rDown* sin(nextAngle),heightDown,rDown* cos(nextAngle));
 
-            addVerticeToList(*list,rDown* sin(angle), heightDown, rDown * cos(angle));
-            addVerticeToList(*list,rDown* sin(nextAngle),heightDown,rDown* cos(nextAngle));
-            addVerticeToList(*list,rUp* sin(nextAngle), heightUP, rUp* cos(nextAngle));
+            addTriangle(&vector,upNext,upNow,downNow);
+
+            addTriangle(&vector,downNow,downNext,upNext);
 
         }
 
-        addVerticeToList(*list,r * sin(nextAngle), initialHeight, r * cos(nextAngle));
-        addVerticeToList(*list,r * sin(angle), initialHeight, r * cos(angle));
-        addVerticeToList(*list,0, initialHeight, 0);
+        Ponto baseNext = Ponto(r * sin(nextAngle), initialHeight, r * cos(nextAngle));
+        Ponto baseNow = Ponto(r * sin(angle), initialHeight, r * cos(angle));
+        Ponto center = Ponto(0, initialHeight, 0);
+
+        addTriangle(&vector,baseNext,baseNow,center);
 
     }
-    return list;
+    return vector;
 }
 
 
-list<float>* getPointsSphere(float radius, int slices,int stacks){
+vector<Ponto> getPointsSphere(float radius, int slices,int stacks){
     float anglePart = 2 * M_PI / slices;
     float heightPart = M_PI/stacks;
     float initialAngle = -M_PI/2;
-    list<float> *list = new ::list<float>;
+    //list<float> *list = new ::list<float>;
+    vector<Ponto> vector;
     for (int i = 0; i < slices;i++) {
         float angle = ((float) i) * anglePart;
         float nextAngle = angle + anglePart;
@@ -127,26 +147,28 @@ list<float>* getPointsSphere(float radius, int slices,int stacks){
             if(angleUp>=M_PI/2)angleUp=M_PI/2-0.00001;
             if(angleDown<=-M_PI/2)angleDown=-M_PI/2+0.000001;
 
+            Ponto upNow = Ponto(radius* cos(angleUp)*sin(angle),radius*sin(angleUp),radius* cos(angle)* cos(angleUp) );
+            Ponto upNext = Ponto(radius* cos(angleUp)*sin(nextAngle),radius* sin(angleUp), radius * cos(nextAngle)* cos(angleUp));
+            Ponto downNow = Ponto (radius* cos(angleDown)*sin(angle),radius*sin(angleDown),radius* cos(angle)* cos(angleDown));
+            Ponto downNext = Ponto(radius* cos(angleDown)*sin(nextAngle),radius*sin(angleDown), radius * cos(nextAngle)* cos(angleDown));
 
-            addVerticeToList(*list,radius* cos(angleUp)*sin(angle),radius*sin(angleUp),radius* cos(angle)* cos(angleUp) ) ;
-            addVerticeToList(*list,radius* cos(angleDown)*sin(angle),radius*sin(angleDown),radius* cos(angle)* cos(angleDown));
-            addVerticeToList(*list,radius* cos(angleDown)*sin(nextAngle),radius*sin(angleDown), radius * cos(nextAngle)* cos(angleDown));
+            addTriangle(&vector,upNow,downNow,downNext);
 
-            addVerticeToList(*list,radius* cos(angleUp)*sin(nextAngle),radius* sin(angleUp), radius * cos(nextAngle)* cos(angleUp));
-            addVerticeToList(*list,radius* cos(angleUp)*sin(angle),radius* sin(angleUp),radius* cos(angle)* cos(angleUp));
-            addVerticeToList(*list,radius* cos(angleDown)*sin(nextAngle), radius* sin(angleDown), radius* cos(nextAngle)* cos(angleDown));
+            addTriangle(&vector,upNext,upNow,downNext);
+
 
         }
     }
-    return list;
+    return vector;
 }
 
-list<float>* getPointsBox (float length, int divisions){
+vector<Ponto> getPointsBox (float length, int divisions){
     float part = length/(float)divisions;
     float halfAltura = length/2;
     float initX = - halfAltura;
     float initZ = initX;
-    list<float> *list = new ::list<float>;
+    //list<float> *list = new ::list<float>;
+    vector<Ponto> vector;
 
     // Y Constante
     for (int i = 0;i < divisions;i++){
@@ -156,25 +178,21 @@ list<float>* getPointsBox (float length, int divisions){
             float nextPosX = posX + part;
             float nextPosZ = posZ + part;
 
+            Ponto nextXnextZ = Ponto(nextPosX,halfAltura,nextPosZ);
+            Ponto XnextZ = Ponto(posX,halfAltura,nextPosZ);
+            Ponto nextXZ = Ponto(nextPosX,halfAltura,posZ);
+            Ponto XZ = Ponto(posX,halfAltura,posZ);
 
-            addVerticeToList(*list,nextPosX,halfAltura,nextPosZ);
-            addVerticeToList(*list,nextPosX,halfAltura,posZ);
-            addVerticeToList(*list,posX,halfAltura,posZ);
+            addTriangle(&vector,nextXnextZ,nextXZ,XZ);
+            addTriangle(&vector,XZ,XnextZ,nextXnextZ);
 
+            Ponto OnextXnextZ = Ponto(nextPosX,-halfAltura,nextPosZ);
+            Ponto OXnextZ = Ponto(posX,-halfAltura,nextPosZ);
+            Ponto OnextXZ = Ponto(nextPosX,-halfAltura,posZ);
+            Ponto OXZ = Ponto(posX,-halfAltura,posZ);
 
-            addVerticeToList(*list, posX, halfAltura, posZ);
-            addVerticeToList(*list, posX, halfAltura, nextPosZ);
-            addVerticeToList(*list, nextPosX, halfAltura, nextPosZ);
-
-
-            addVerticeToList(*list,posX,-halfAltura,posZ);
-            addVerticeToList(*list,nextPosX,-halfAltura,posZ);
-            addVerticeToList(*list,nextPosX,-halfAltura,nextPosZ);
-
-
-            addVerticeToList(*list, nextPosX, -halfAltura, nextPosZ);
-            addVerticeToList(*list, posX, -halfAltura, nextPosZ);
-            addVerticeToList(*list, posX, -halfAltura, posZ);
+            addTriangle(&vector,OXZ,OnextXZ,OnextXnextZ);
+            addTriangle(&vector,OnextXnextZ,OXnextZ,OXZ);
 
         }
     }
@@ -183,24 +201,28 @@ list<float>* getPointsBox (float length, int divisions){
         for (int j = 0; j < divisions;j++){
             float posY = halfAltura - i * part;
             float posZ = initZ + j * part;
-            float netxPosZ = posZ + part;
+            float nextPosZ = posZ + part;
             float nextPosY=posY-part;
-            addVerticeToList(*list,initX,posY, netxPosZ);
-            addVerticeToList(*list,initX,posY, posZ);
-            addVerticeToList(*list,initX,nextPosY, posZ);
+
+            Ponto nextYnextZ = Ponto(initX, nextPosY, nextPosZ);
+            Ponto YnextZ = Ponto(initX, posY, nextPosZ);
+            Ponto nextYZ = Ponto(initX, nextPosY, posZ);
+            Ponto YZ = Ponto(initX, posY, posZ);
 
 
-            addVerticeToList(*list, initX, posY, posZ + part);
-            addVerticeToList(*list, initX, nextPosY, posZ);
-            addVerticeToList(*list, initX, nextPosY, netxPosZ);
+            addTriangle(&vector,YnextZ,YZ,nextYZ);
+            addTriangle(&vector,YnextZ,nextYZ,nextYnextZ);
 
-            addVerticeToList(*list,-initX,nextPosY, posZ);
-            addVerticeToList(*list,-initX,posY, posZ);
-            addVerticeToList(*list,-initX,posY, netxPosZ);
 
-            addVerticeToList(*list, -initX, nextPosY, netxPosZ);
-            addVerticeToList(*list, -initX, nextPosY, posZ);
-            addVerticeToList(*list, -initX, posY, netxPosZ);
+            Ponto OnextYnextZ = Ponto(-initX, nextPosY, nextPosZ);
+            Ponto OYnextZ = Ponto(-initX, posY, nextPosZ);
+            Ponto OnextYZ = Ponto(-initX, nextPosY, posZ);
+            Ponto OYZ = Ponto(-initX, posY, posZ);
+
+
+            addTriangle(&vector,OnextYZ,OYZ,OYnextZ);
+            addTriangle(&vector,OnextYnextZ,OnextYZ,OYnextZ);
+
 
         }
     }
@@ -213,35 +235,36 @@ list<float>* getPointsBox (float length, int divisions){
             float nextPosX=posX+part;
 
 
-            addVerticeToList(*list,posX,nextPosY, initZ);
-            addVerticeToList(*list,posX,posY, initZ);
-            addVerticeToList(*list,nextPosX,posY, initZ);
+            Ponto nextXnextY = Ponto(nextPosX,nextPosY, initZ);
+            Ponto XnextY = Ponto(posX,nextPosY, initZ);
+            Ponto nextXY = Ponto(nextPosX,posY, initZ);
+            Ponto XY = Ponto(posX,posY, initZ);
 
-            addVerticeToList(*list, nextPosX, nextPosY, initZ);
-            addVerticeToList(*list, posX, nextPosY, initZ);
-            addVerticeToList(*list, nextPosX, posY, initZ);
+            addTriangle(&vector,XnextY,XY,nextXY);
+            addTriangle(&vector,nextXnextY,XnextY,nextXY);
 
 
-            addVerticeToList(*list,posX + part,posY, -initZ);
-            addVerticeToList(*list,posX,posY, -initZ);
-            addVerticeToList(*list,posX,nextPosY, -initZ);
+            Ponto OnextXnextY = Ponto(nextPosX,nextPosY, -initZ);
+            Ponto OXnextY = Ponto(posX,nextPosY, -initZ);
+            Ponto OnextXY = Ponto(nextPosX,posY, -initZ);
+            Ponto OXY = Ponto(posX,posY, -initZ);
 
-            addVerticeToList(*list, nextPosX, posY, -initZ);
-            addVerticeToList(*list, posX, nextPosY, -initZ);
-            addVerticeToList(*list, nextPosX, nextPosY, -initZ);
+            addTriangle(&vector,OnextXY,OXY,OXnextY);
+            addTriangle(&vector,OnextXY,OXnextY,OnextXnextY);
+
 
         }
     }
-    return list;
+    return vector;
 }
 
-list<float>* getPointsCylinder(float r, float height, int slices, int stacks) {
+vector<Ponto> getPointsCylinder(float r, float height, int slices, int stacks) {
     float anglePart = 2 * M_PI / slices;
     float halfHeight = height / 2;
     float heightPart = height/(float)stacks;
 
-    list<float> *list = new ::list<float>;
 
+    vector<Ponto> vector;
 
 
     for (int i = 0; i < slices; i++) {
@@ -250,73 +273,74 @@ list<float>* getPointsCylinder(float r, float height, int slices, int stacks) {
         float angle = ((float) i) * anglePart;
         float nextAngle = angle + anglePart;
 
-        addVerticeToList(*list, 0, halfHeight, 0);
-        addVerticeToList(*list, r * sin(angle), halfHeight, r * cos(angle));
-        addVerticeToList(*list, r * sin(nextAngle), halfHeight, r * cos(nextAngle));
+        Ponto baseNow = Ponto(r * sin(angle), halfHeight, r * cos(angle));
+        Ponto baseNext= Ponto(r * sin(nextAngle), halfHeight, r * cos(nextAngle));
+        Ponto center = Ponto(0, halfHeight, 0);
 
-        addVerticeToList(*list, r * sin(nextAngle), -halfHeight, r * cos(nextAngle));
-        addVerticeToList(*list, r * sin(angle), -halfHeight, r * cos(angle));
-        addVerticeToList(*list, 0, -halfHeight, 0);
+        addTriangle(&vector,center,baseNow,baseNext);
+
+        Ponto ObaseNow = Ponto(r * sin(angle), -halfHeight, r * cos(angle));
+        Ponto ObaseNext= Ponto(r * sin(nextAngle), -halfHeight, r * cos(nextAngle));
+        Ponto Ocenter = Ponto(0, -halfHeight, 0);
+
+        addTriangle(&vector,ObaseNext,ObaseNow,Ocenter);
 
         for (int j = 0; j < stacks; j++) {
             float heightUp = -halfHeight + (heightPart * (float )(j+1));
             float heightDown = -halfHeight + (heightPart * (float )(j));
 
 
-            addVerticeToList(*list, r * sin(angle), heightUp, r * cos(angle));
-            addVerticeToList(*list, r * sin(angle), heightDown, r * cos(angle));
-            addVerticeToList(*list, r * sin(nextAngle), heightDown, r * cos(nextAngle));
+            Ponto upNow = Ponto(r * sin(angle), heightUp, r * cos(angle));
+            Ponto upNext = Ponto(r * sin(nextAngle), heightUp, r * cos(nextAngle));
+            Ponto downNow = Ponto(r * sin(angle), heightDown, r * cos(angle));
+            Ponto downNext= Ponto(r * sin(nextAngle), heightDown, r * cos(nextAngle));
 
-            addVerticeToList(*list, r * sin(nextAngle), heightUp, r * cos(nextAngle));
-            addVerticeToList(*list, r * sin(angle), heightUp, r * cos(angle));
-            addVerticeToList(*list, r * sin(nextAngle), heightDown, r * cos(nextAngle));
+            addTriangle(&vector,upNow,downNow,downNext);
+            addTriangle(&vector,upNext,upNow,downNext);
 
         }
     }
-    return list;
+    return vector;
 }
 
-list<float>* getPointsTorus (float raio_in, float raio_out, int slices, int stacks){
+vector<Ponto> getPointsTorus (float raio_in, float raio_out, int slices, int stacks){
     float delta1= 2* M_PI / slices;
     float delta2= 2* M_PI / stacks;
     float phi = 0;
     float theta=0;
 
-    list<float> *list = new ::list<float>;
-
+    vector<Ponto> vector;
 
     for (int i = 0; i < slices; ++i) {
         for (int j = 0; j < stacks; ++j) {
-            (*list).push_back((raio_in + raio_out * cos(phi)) * cos(theta));
-            (*list).push_back((raio_in + raio_out * cos(phi))*sin(theta));
-            (*list).push_back(raio_out * sin(phi));
 
-            (*list).push_back((raio_in +raio_out * cos(phi)) * cos(theta + delta1));
-            (*list).push_back((raio_in + raio_out * cos(phi)) * sin(theta + delta1));
-            (*list).push_back(raio_out * sin(phi));
+            float posX = (raio_in + raio_out  * cos(phi)) * cos(theta);
+            float d1X =  (raio_in + raio_out  * cos(phi))* cos(theta + delta1);
+            float d2X =  (raio_in + raio_out  * cos(phi + delta2)) * cos(theta);
+            float d3X =  (raio_in + raio_out  * cos(phi + delta2)) * cos(theta+delta1);
 
-            (*list).push_back((raio_in +raio_out * cos(phi + delta2)) * cos(theta+delta1));
-            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta+delta1));
-            (*list).push_back(raio_out * sin(phi+delta2));
+            float posY = (raio_in + raio_out  * cos(phi))*sin(theta);
+            float d1Y =  (raio_in + raio_out  * cos(phi))*sin(theta+delta1);
+            float d2Y =  (raio_in + raio_out  * cos(phi+delta2))*sin(theta);
+            float d3Y =  (raio_in + raio_out  * cos(phi+delta2))*sin(theta+delta1);
 
-            (*list).push_back((raio_in +raio_out * cos(phi+delta2)) * cos(theta+delta1));
-            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta+delta1));
-            (*list).push_back(raio_out * sin(phi+delta2));
+            float posZ =raio_out  * sin(phi);
+            float d2Z = raio_out * sin(phi+delta2);
 
-            (*list).push_back((raio_in +raio_out * cos(phi + delta2)) * cos(theta));
-            (*list).push_back((raio_in + raio_out * cos(phi+delta2))*sin(theta));
-            (*list).push_back(raio_out * sin(phi+delta2));
+            Ponto p = Ponto(posX,posY,posZ);
+            Ponto pd1 = Ponto(d1X,d1Y,posZ);
+            Ponto pd2 = Ponto(d2X,d2Y,d2Z);
+            Ponto pd3 = Ponto(d3X,d3Y,d2Z);
 
-            (*list).push_back((raio_in +raio_out * cos(phi)) * cos(theta));
-            (*list).push_back((raio_in + raio_out * cos(phi))*sin(theta));
-            (*list).push_back(raio_out * sin(phi));
+            addTriangle(&vector,p,pd1,pd3);
+            addTriangle(&vector,pd3,pd2,p);
 
             phi = delta2 * (j+1);
         }
         theta = delta1 * (i+1);
 
     }
-    return list;
+    return vector;
 
 }
 
@@ -327,6 +351,144 @@ void printErro(const string& str){
     cout <<"For info -> ./generator help\n";
 }
 
+
+void multMatrixVector(float m[4][4], float *v, float *res) {
+    for (int j = 0; j < 4; ++j) {
+        res[j] = 0;
+        for (int k = 0; k < 4; ++k) {
+            res[j] += v[k] * m[j][k];
+        }
+    }
+
+}
+
+
+Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
+    //bezier matrix
+    float m[4][4] = {	{-1,  3, -3,  1},
+                         { 3, -6,  3, 0},
+                         {-3,  3,  0,  0.0f},
+                         { 1.0f,  0.0f,  0.0f,  0.0f}};
+
+
+    float pos[3];
+
+
+    for (int i = 0; i < 3;i++){
+        float vector[4] ={p0.get(i),p1.get(i),p2.get(i),p3.get(i)};
+        float a[4];
+        multMatrixVector(m,vector,a);
+
+        pos[i] = powf(t,3) * a[0] + powf(t,2) * a[1] + t * a[2] + a[3];
+
+    }
+
+    Ponto p(pos[0],pos[1],pos[2]);
+
+
+    return p;
+
+
+}
+
+
+
+vector<Ponto> getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Ponto> pontos){
+
+    float part = 1.0f/(float)tesselation;
+    vector <Ponto> vectorRes;
+    for (vector<int> patch : patchVector) {
+        vector<Ponto> points;
+        for (int i = 0; i <= tesselation; i++) {
+            float u = part * (float) i;
+
+            vector<Ponto> curve;
+
+            for (int ii = 0; ii < 4; ii++) {
+                int index = ii * 4;
+                Ponto p0 = pontos[(patch[index])];
+                Ponto p1 = pontos[(patch[index + 1])];
+                Ponto p2 = pontos[(patch[index + 2])];
+                Ponto p3 = pontos[(patch[index + 3])];
+
+                Ponto p = getBezierPoint(u, p0, p1, p2, p3);
+                curve.push_back(p);
+            }
+
+            for (int j = 0; j <= tesselation; j++) {
+                float v = part * (float) j;
+                Ponto p0 = curve[0];
+                Ponto p1 = curve[1];
+                Ponto p2 = curve[2];
+                Ponto p3 = curve[3];
+                Ponto p = getBezierPoint(v, p0, p1, p2, p3);
+                points.push_back(p);
+            }
+        }
+        for (int u = 0; u < tesselation; u++) {
+            int indexFIRST = u * (tesselation+1);
+            int indexNEXT = (u + 1) * (tesselation+1);
+            for (int i = 0; i < tesselation; i++) {
+                Ponto upNow = points[indexFIRST + i];
+                Ponto botNow = points[indexFIRST+ i + 1];
+                Ponto upNext = points[indexNEXT + i];
+                Ponto botNext = points[indexNEXT + i + 1];
+
+                addTriangle(&vectorRes,upNext,upNow,botNow);
+                addTriangle(&vectorRes,botNow,botNext,upNext);
+
+            }
+        }
+    }
+    return vectorRes;
+}
+
+
+
+
+
+
+vector<Ponto> readFilePatch (int tesselation ,string filename){
+    ifstream file(filename);
+    string str;
+    getline(file,str);
+    vector<vector<int>> patches;
+    int nrPatches = stoi(str);
+    for (int i = 0; i < nrPatches;i++) {
+        vector<int> vector;
+        getline(file, str);
+        string token;
+        stringstream ss (str);
+        while (getline(ss,token,',')){
+            int number = stoi(token);
+            vector.push_back(number);
+        }
+        patches.push_back(vector);
+    }
+
+    getline(file,str);
+    int nrPoints = stoi(str);
+    vector<Ponto> vectorPontos;
+    for (int i = 0; i < nrPoints;i++) {
+        getline(file, str);
+        string token;
+        stringstream ss (str);
+        vector<float> ponto;
+        while (getline(ss,token,',')){
+            float number = stof(token);
+            ponto.push_back(number);
+        }
+        Ponto p(ponto[0],ponto[1],ponto[2]);
+        vectorPontos.push_back(p);
+    }
+    printf("Vector pontos size %zu\n",vectorPontos.size());
+    return getPointsBezier(tesselation,patches,vectorPontos);
+}
+
+
+//int main (int argc, char **argv){
+//    readFilePatch(argv[1]);
+//}
 
 
 int main(int argc, char **argv){
@@ -360,9 +522,11 @@ int main(int argc, char **argv){
             float radius = std::stof(argv[2]);
             int slices = std::stoi(argv[3]);
             int stacks = std::stoi(argv[4]);
-            list<float> *list = getPointsSphere(radius,slices,stacks);
+            //list<float> *list = getPointsSphere(radius,slices,stacks);
+            vector<Ponto> vector = getPointsSphere(radius,slices,stacks);
+
             char *filename = argv[5];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
 
 
@@ -379,9 +543,11 @@ int main(int argc, char **argv){
         try {
             float length = std::stof(argv[2]);
             int divisions = std::stoi(argv[3]);
-            list<float> *list = getPointsBox(length,divisions);
+            //list<float> *list = getPointsBox(length,divisions);
+            vector<Ponto> vector = getPointsBox(length,divisions);
+
             char *filename = argv[4];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -399,9 +565,10 @@ int main(int argc, char **argv){
             float height = std::stof(argv[3]);
             int slices = std::stoi(argv[4]);
             int stacks = std::stoi(argv[5]);
-            list<float> *list = getPointsCone(radius,height,slices,stacks);
+            //list<float> *list = getPointsCone(radius,height,slices,stacks);
+            vector<Ponto> vector = getPointsCone(radius,height,slices,stacks);
             char *filename = argv[6];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -418,9 +585,10 @@ int main(int argc, char **argv){
         try {
             float length = std::stof(argv[2]);
             int divisions = std::stoi(argv[3]);
-            list<float> *list = getPointsPlane(length,divisions);
+            //list<float> *list = getPointsPlane(length,divisions);
+            vector<Ponto> vector = getPointsPlane(length,divisions);
             char *filename = argv[4];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
         }
         catch (std::exception& ia){
@@ -437,9 +605,10 @@ int main(int argc, char **argv){
             float height = std::stof(argv[3]);
             int slices= std::stoi(argv[4]);
             int stacks= std::stoi(argv[5]);
-            list<float> *list = getPointsCylinder(radius,height,slices,stacks);
+            //list<float> *list = getPointsCylinder(radius,height,slices,stacks);
+            vector<Ponto> vector = getPointsCylinder(radius,height,slices,stacks);
             char *filename = argv[6];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -457,9 +626,30 @@ int main(int argc, char **argv){
             float radiusOut = std::stof(argv[3]);
             int slices= std::stoi(argv[4]);
             int stacks= std::stoi(argv[5]);
-            list<float> *list = getPointsTorus(radiusIn,radiusOut,slices,stacks);
+           // list<float> *list = getPointsTorus(radiusIn,radiusOut,slices,stacks);
+            vector<Ponto> vector = getPointsTorus(radiusIn,radiusOut,slices,stacks);
             char *filename = argv[6];
-            writeFile(*list,filename);
+            writeFile(vector,filename);
+            printf("%s gerado\n",filename);
+
+        }
+        catch (std::exception& ia){
+            printErro("Argumentos inválidos");
+        }
+    }
+    else if (!strcmp(primitive,"bezier")){
+        try {
+            if (argc != 5){
+                printErro("nº de argumentos inválido");
+                return 0;
+            }
+            char* filePatch = argv[2];
+            printf("%s\n",argv[4]);
+            int tesselation = std::stoi(argv[3]);
+            //list<float> *list = readFilePatch(tesselation,filePatch);
+            vector<Ponto> vector= readFilePatch(tesselation,filePatch);
+            char *filename = argv[4];
+            writeFile(vector,filename);
             printf("%s gerado\n",filename);
 
         }

@@ -12,13 +12,23 @@
 class Rotation : public Transform {
 public:
     float angle;
+    float time;
 
-    Rotation(float angle, float x, float y, float z) : Transform(x, y, z) {
+    Rotation(float angle, float x, float y, float z,float time) : Transform(x, y, z) {
         this->angle = angle;
+        this->time = time;
     }
 
-    void doAction() {
-        glRotatef(angle, x, y, z);
+
+
+    void doAction(float t) {
+        float newAng = 0;
+        if(time != -1) {
+            int start = t / time;
+            t -= start * time;
+            newAng = 360 * (t / time);
+        }
+        glRotatef(angle + newAng, x, y, z);
     }
 };
 

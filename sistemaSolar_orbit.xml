@@ -1,6 +1,6 @@
 <world>
     <camera>
-        <position x="58" y="50" z="78" rMax="240"/>
+        <position x="58" y="50" z="78" rMax="250"/>
         <lookAt x="0" y="0" z="0"/>
         <up x="0" y="1" z="0"/>
         <projection fov="60" near="1" far="1000"/>
@@ -20,9 +20,17 @@
         <group>
             <transform>
                 <rotate time="2.41" x="0" y="1" z="1"/>
-                <translate x="12.76" y="0" z="0"/>
+				<translate time = "2.41" align="True" > 
+					<point x = "0" y = "0" z = "12.76" />
+					<point x = "9.023" y = "0" z = "9.023" />
+					<point x = "12.76" y = "0" z = "0" />
+					<point x = "9.023" y = "0" z = "-9.023" />
+					<point x = "0" y = "0" z = "-12.76" />
+					<point x = "-9.023" y = "0" z = "-9.023" />
+					<point x = "-12.76" y = "0" z = "0" />
+					<point x = "-9.023" y = "0" z = "9.023" />
+				</translate>
                 <scale x="0.376" y="0.376" z="0.376"/>
-
 			</transform>
 			<color r="150" g="26" b="26"/>
             <models>
@@ -34,7 +42,16 @@
 			<color r="230" g="230" b="230"/>
             <transform>
                 <rotate time="6.16" x="0" y="1" z="1"/>
-                <translate x="14.44" y="0" z="0"/>
+				<translate time = "6.16" align="True" > 
+					<point x = "0" y = "0" z = "14.44" />
+					<point x = "10.21" y = "0" z = "10.21" />
+					<point x = "14.44" y = "0" z = "0" />
+					<point x = "10.21" y = "0" z = "-10.21" />
+					<point x = "0" y = "0" z = "-14.44" />
+					<point x = "-10.21" y = "0" z = "-10.21" />
+					<point x = "-14.44" y = "0" z = "0" />
+					<point x = "-10.21" y = "0" z = "10.21" />
+				</translate>
                 <scale x="0.949" y="0.949" z="0.949"/>
             </transform>
             <models>
@@ -46,7 +63,16 @@
 			<color r="4" g="137" b="232"/> 
             <transform>
                 <rotate time="10" x="1" y="1" z="1"/>
-                <translate x="16" y="0" z="0"/>
+				<translate time = "10" align="True" > 
+					<point x = "0" y = "0" z = "16" />
+					<point x = "11.31" y = "0" z = "11.31" />
+					<point x = "16" y = "0" z = "0" />
+					<point x = "11.31" y = "0" z = "-11.31" />
+					<point x = "0" y = "0" z = "-16" />
+					<point x = "-11.31" y = "0" z = "-11.31" />
+					<point x = "-16" y = "0" z = "0" />
+					<point x = "-11.31" y = "0" z = "11.31" />
+				</translate>
 			</transform>
             <models>
                 <model file="sphere.3d"/>
@@ -69,7 +95,16 @@
 			<color r="153" g="61" b="0"/>
             <transform>
                 <rotate angle="90" time="18.82" x="0" y="1" z="1"/>
-                <translate x="17.5" y="0" z="0"/>
+				<translate time = "18.82" align="True" > 
+					<point x = "0" y = "0" z = "17" />
+					<point x = "12.02" y = "0" z = "12.02" />
+					<point x = "17" y = "0" z = "0" />
+					<point x = "12.02" y = "0" z = "-12.02" />
+					<point x = "0" y = "0" z = "-17" />
+					<point x = "-12.02" y = "0" z = "-12.02" />
+					<point x = "-17" y = "0" z = "0" />
+					<point x = "-12.02" y = "0" z = "12.02" />
+				</translate>
                 <scale x="0.533" y="0.533" z="0.533"/>
 			</transform>
             <models>
@@ -79,7 +114,7 @@
         <!--Asteroides-->
         <group>
             <transform>
-                <rotate time="10" x="1" y="1" z="0"/>
+                <rotate time="30" x="1" y="1" z="1"/>
             </transform>
             <group units="1000">
                 <color r="100" g="100" b="100"/>
@@ -87,7 +122,7 @@
                     <model file="asteroid.3d"/>
                 </models>
                 <transform>
-                    <rotate time="5" timeR="10" angleR="360" x="0" y="1" z="0"/>
+                    <rotate angle="0" angleR="360" x="0" y="1" z="0"/>
                     <translate x="0" xR="7" y="0" yR="3" z="18"/>
                 </transform>
             </group>
@@ -97,7 +132,16 @@
 			<color r="176" g="127" b="53"/>
             <transform>
                 <rotate time="50" x="0" y="1" z="1"/>
-                <translate x="26.4" y="0" z="0"/>
+				<translate time = "50" align="True" >
+					<point x = "0" y = "0" z = "26.4" />
+					<point x = "18.67" y = "0" z = "18.67" />
+					<point x = "26.4" y = "0" z = "0" />
+					<point x = "18.67" y = "0" z = "-18.67" />
+					<point x = "0" y = "0" z = "-26.4" />
+					<point x = "-18.67" y = "0" z = "-18.67" />
+					<point x = "-26.4" y = "0" z = "0" />
+					<point x = "-18.67" y = "0" z = "18.67" />
+				</translate>
                 <scale x="11.2" y="11.2" z="11.2"/>
 			</transform>
             <models>
@@ -145,7 +189,16 @@
 			<color r="176" g="143" b="54"/>
             <transform>
                 <rotate angle="270" time="70" x="0" y="1" z="1"/>
-                <translate x="43" y="0" z="0"/>
+				<translate time = "70" align="True" > 
+					<point x = "0" y = "0" z = "43" />
+					<point x = "30.40" y = "0" z = "30.40" />
+					<point x = "43" y = "0" z = "0" />
+					<point x = "30.40" y = "0" z = "-30.40" />
+					<point x = "0" y = "0" z = "-43" />
+					<point x = "-30.40" y = "0" z = "-30.40" />
+					<point x = "-43" y = "0" z = "0" />
+					<point x = "-30.40" y = "0" z = "30.40" />
+				</translate>
                 <scale x="9.46" y="9.46" z="9.46"/>
 			</transform>
             <models>
@@ -205,7 +258,16 @@
 			<color r="85" g="128" b="170"/>
             <transform>
                 <rotate angle ="180" time="90" x="0" y="1" z="1"/>
-                <translate x="61" y="0" z="0"/>
+				<translate time = "90" align="True" > 
+					<point x = "0" y = "0" z = "61" />
+					<point x = "43.13" y = "0" z = "43.13" />
+					<point x = "61" y = "0" z = "0" />
+					<point x = "43.13" y = "0" z = "-43.13" />
+					<point x = "0" y = "0" z = "-61" />
+					<point x = "-43.13" y = "0" z = "-43.13" />
+					<point x = "-61" y = "0" z = "0" />
+					<point x = "-43.13" y = "0" z = "43.13" />
+				</translate>
                 <scale x="4.06" y="4.06" z="4.06"/>
 			</transform>
             <models>
@@ -228,8 +290,17 @@
         <group>
 			<color r="54" g="10" b="150"/>
             <transform>
-                <rotate angle="90" time="110" x="0" y="1" z="1"/>
-                <translate x="80" y="0" z="0"/>
+                <rotate time="90" angle="90" x="0" y="1" z="1"/>
+				<translate time = "110" align="True" >
+					<point x = "0" y = "0" z = "80" />
+					<point x = "56.57" y = "0" z = "56.57" />
+					<point x = "80" y = "0" z = "0" />
+					<point x = "56.57" y = "0" z = "-56.57" />
+					<point x = "0" y = "0" z = "-80" />
+					<point x = "-56.57" y = "0" z = "-56.57" />
+					<point x = "-80" y = "0" z = "0" />
+					<point x = "-56.57" y = "0" z = "56.57" />
+				</translate>
                 <scale x="3.88" y="3.88" z="3.88"/>
 			</transform>
             <models>
