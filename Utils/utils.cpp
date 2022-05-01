@@ -38,3 +38,15 @@ void utils::normalize(float *a) {
     a[2] = a[2]/l;
 }
 
+void utils::printPonto(Ponto p) {
+    printf("%f | %f | %f\n",p.x,p.y,p.z);
+}
+
+float utils::toDegree(float angle) {
+    return angle  * 180/M_PI;
+}
+
+float utils::toRad(float angle) {
+    return angle * M_PI/180;
+}
+

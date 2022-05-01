@@ -6,7 +6,8 @@
 #define CLASS4_UTILS_H
 
 #include <cmath>
-
+#include <stdio.h>
+#include "../Engine/Ponto.h"
 
 
 class utils {
@@ -22,6 +23,14 @@ public:
 
 
     static void normalize(float *a);
+
+    static void printPonto(Ponto p);
+
+    static float toDegree(float angle);
+
+    static float toRad(float angle);
+
+
 };
 
 

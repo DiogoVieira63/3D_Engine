@@ -24,20 +24,12 @@ public:
     vector<Ponto>curvePoints;
 
 
-
-
     Translation(float x, float y, float z,vector<Ponto> vector,float num, bool align) : Transform(x, y, z) {
         this->points = vector;
         this->time = num;
         this->align = align;
         if (!vector.empty())setCurvePoints();
     }
-
-    void printPonto(Ponto p){
-        printf("%f | %f | %f\n",p.x,p.y,p.z);
-    }
-
-
     void setCurvePoints(){
         float pos[4];
         float deriv[4];
@@ -58,7 +50,6 @@ public:
                              {-0.5f,  0.0f,  0.5f,  0.0f},
                              { 0.0f,  1.0f,  0.0f,  0.0f}};
 
-
         for (int i = 0; i < 3;i++){
             float vector[4] = {p0.get(i),p1.get(i),p2.get(i),p3.get(i)};
             float a[4];
@@ -70,9 +61,7 @@ public:
 
 // given  global t, returns the point in the curve
     void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv) {
-
         int size = points.size();
-
 
         float t = gt * (float) size; // this is the real global t
         int index = floor(t);  // which segment
@@ -85,9 +74,6 @@ public:
         indices[2] = (indices[1]+1)%size;
         indices[3] = (indices[2]+1)%size;
 
-
-
-
         getCatmullRomPoint(t, points[indices[0]], points[indices[1]], points[indices[2]], points[indices[3]], pos, deriv);
     }
 
@@ -99,7 +85,6 @@ public:
             glVertex3f(p.x,p.y,p.z);
 
         glEnd();
-
 
     }
 

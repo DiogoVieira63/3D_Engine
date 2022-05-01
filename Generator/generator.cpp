@@ -14,6 +14,7 @@ using namespace std;
 #include <math.h>
 #include <sstream>
 #include "../Engine/Ponto.h"
+#include "../Utils/utils.h"
 
 void writeFile(vector<Ponto> vect, char *filename){
     ofstream file;
@@ -28,28 +29,6 @@ void writeFile(vector<Ponto> vect, char *filename){
     }
 }
 
-
-void writeFile(list<float> list,char* filename){
-    ofstream file;
-    file.open(filename);
-    ::list<float>::iterator it;
-    int nrVertices = list.size()/3;
-    file << nrVertices << '\n';
-    for (it = list.begin(); it != list.end(); ++it) {
-        file << *it << ' ';
-        ++it;
-        file << *it << ' ';
-        ++it;
-        file << *it << ' ';
-        file << '\n';
-    }
-}
-
-void addVerticeToList(list<float>&list, float x,float y, float z){
-    list.push_back(x);
-    list.push_back(y);
-    list.push_back(z);
-}
 
 void addTriangle(vector<Ponto> *vector,Ponto p0,Ponto p1,Ponto p2){
     vector->push_back(p0);
@@ -66,7 +45,6 @@ vector<Ponto> getPointsPlane (float length,int divisions){
     float part = length/(float )divisions;
 
     vector<Ponto>vector;
-
 
     for (int i = 0;i < divisions;i++){
         float posX = inicial_posX + (float) i * part;
@@ -338,30 +316,9 @@ vector<Ponto> getPointsTorus (float raio_in, float raio_out, int slices, int sta
             phi = delta2 * (j+1);
         }
         theta = delta1 * (i+1);
-
     }
     return vector;
-
 }
-
-
-
-void printErro(const string& str){
-    cout << "Erro:" <<str << "\n";
-    cout <<"For info -> ./generator help\n";
-}
-
-
-void multMatrixVector(float m[4][4], float *v, float *res) {
-    for (int j = 0; j < 4; ++j) {
-        res[j] = 0;
-        for (int k = 0; k < 4; ++k) {
-            res[j] += v[k] * m[j][k];
-        }
-    }
-
-}
-
 
 Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
     //bezier matrix
@@ -377,7 +334,7 @@ Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
     for (int i = 0; i < 3;i++){
         float vector[4] ={p0.get(i),p1.get(i),p2.get(i),p3.get(i)};
         float a[4];
-        multMatrixVector(m,vector,a);
+        utils::multMatrixVector(m,vector,a);
 
         pos[i] = powf(t,3) * a[0] + powf(t,2) * a[1] + t * a[2] + a[3];
 
@@ -394,7 +351,6 @@ Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
 
 
 vector<Ponto> getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Ponto> pontos){
-
     float part = 1.0f/(float)tesselation;
     vector <Ponto> vectorRes;
     for (vector<int> patch : patchVector) {
@@ -444,7 +400,10 @@ vector<Ponto> getPointsBezier(int tesselation,vector<vector<int>>patchVector, ve
 }
 
 
-
+void printErro(const string& str){
+    cout << "Erro:" <<str << "\n";
+    cout <<"For info -> ./generator help\n";
+}
 
 
 
@@ -486,9 +445,7 @@ vector<Ponto> readFilePatch (int tesselation ,string filename){
 }
 
 
-//int main (int argc, char **argv){
-//    readFilePatch(argv[1]);
-//}
+
 
 
 int main(int argc, char **argv){
