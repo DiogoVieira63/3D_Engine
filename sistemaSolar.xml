@@ -215,7 +215,7 @@
         <group>
 			<color r="85" g="128" b="170"/>
             <transform>
-                <rotate angle ="180" time="90" x="0" y="1" z="1"/>
+                <rotate angle ="180" time="90" x="0" y="-1" z="-1"/>
                 <translate x="61" y="0" z="0"/>
                 <scale x="4.06" y="4.06" z="4.06"/>
 			</transform>
