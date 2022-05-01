@@ -174,10 +174,6 @@ void convertToSpherical(Camera *cam) {
     if (betaDeg > 85) beta = 85;
     if (betaDeg < -85) beta = -85;
 
-    //posX= radius * cos(beta) * sin(alpha);
-    //posY= radius * sin(beta);
-    //posZ= radius * cos(beta) * cos(alpha);
-
 
     cam->setPos(posX,posY,posZ);
 
@@ -188,22 +184,11 @@ void convertToSpherical(Camera *cam) {
     d[1] = lookAtY - posY;
     d[2] = lookAtZ - posZ;
 
-    printf("D %f | %f %f \n",d[0],d[1],d[2]);
 
-
-    d[0] = cos(utils::toRad(beta)) * sin(utils::toRad(alpha));
-    d[1] = sin(utils::toRad(beta));
-    d[2] = cos(utils::toRad(beta)) * cos(utils::toRad(alpha));
-    d[0] = lookAtX - posX;
-    d[1] = lookAtY - posY;
-    d[2] = lookAtZ - posZ;
-
-    printf("D2 %f %f %f \n",d[0],d[1],d[2]);
 
     cam->setAlphaBeta(alpha,beta);
 
     utils::normalize(d);
-    printf("D3 %f %f %f \n",d[0],d[1],d[2]);
 
     cam->setD(d[0],d[1],d[2]);
 

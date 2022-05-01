@@ -33,7 +33,7 @@ public:
     void setCurvePoints(){
         float pos[4];
         float deriv[4];
-        int parts = 1000;
+        int parts = 100;
         float part = 1.0f/(float )parts;
         for (int i = 0; i <parts;i++) {
             getGlobalCatmullRomPoint(part*(float)i, pos, deriv);

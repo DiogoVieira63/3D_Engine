@@ -33,7 +33,7 @@
         <group>
 			<color r="230" g="230" b="230"/>
             <transform>
-                <rotate time="6.16" x="0" y="1" z="1"/>
+                <rotate time="6.16" x="0" y="-1" z="-1"/>
                 <translate x="14.44" y="0" z="0"/>
                 <scale x="0.949" y="0.949" z="0.949"/>
             </transform>
