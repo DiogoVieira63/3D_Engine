@@ -158,6 +158,7 @@ void getPointsCone(float r, float height, int slices,int stacks,char *filename) 
 
 
 
+
             addTriangle(&vector,upNext,upNow,downNow);
             addTriangle(&normal,NupNext,NupNow,NdownNow);
             addTriangle(&textures,TupNext,TupNow,TdownNow);
@@ -176,6 +177,8 @@ void getPointsCone(float r, float height, int slices,int stacks,char *filename) 
         Ponto center = Ponto(0, initialHeight, 0);
 
         Ponto down = Ponto(0,-1,0);
+
+
 
         Ponto TbaseNext = Ponto((i+1)*textH,0,0);
         Ponto TbaseNow = Ponto(i*textH,0,0);
@@ -236,7 +239,6 @@ void getPointsSphere(float radius, int slices,int stacks,char *filename){
             float vDown = 1 - textV * (float)(j);
 
 
-            printf("H %f | V %f\n",hNow,vDown);
 
             Ponto TupNow = Ponto(hNow,vUp,0);
             Ponto TupNext = Ponto(hNext,vUp,0);
@@ -264,14 +266,15 @@ void getPointsBox (float length, int divisions,char *filename){
     float halfAltura = length/2;
     float initX = - halfAltura;
     float initZ = initX;
+    float text = 1.0f/(float )divisions;
     //list<float> *list = new ::list<float>;
     vector<Ponto> vector, normal, texture;
 
     // Y Constante
     for (int i = 0;i < divisions;i++){
         for (int j = 0;j < divisions;j++){
-            float posX = initX + i * part;
-            float posZ = initZ + j * part;
+            float posX = initX + (float )i * part;
+            float posZ = initZ + (float )j * part;
             float nextPosX = posX + part;
             float nextPosZ = posZ + part;
 
@@ -283,10 +286,10 @@ void getPointsBox (float length, int divisions,char *filename){
             Ponto up = Ponto(0,1,0);
             Ponto down = Ponto(0,-1,0);
 
-            Ponto TnextXnextZ = Ponto((i+1)*part,(j+1) * part,0);
-            Ponto TXnextZ = Ponto(i*part,(j+1) * part,0);
-            Ponto TnextXZ = Ponto((i+1)*part,j * part,0);
-            Ponto TXZ = Ponto(i*part,j * part,0);
+            Ponto TnextXnextZ = Ponto(1,1,0);
+            Ponto TXnextZ = Ponto(0,1,0);
+            Ponto TnextXZ = Ponto(1,0,0);
+            Ponto TXZ = Ponto(0,0,0);
 
 
             addTriangle(&vector,nextXnextZ,nextXZ,XZ);
@@ -332,10 +335,12 @@ void getPointsBox (float length, int divisions,char *filename){
             Ponto nextYZ = Ponto(initX, nextPosY, posZ);
             Ponto YZ = Ponto(initX, posY, posZ);
 
-            Ponto TnextYnextZ = Ponto((j+1) * part,1 - (i+1) * part, 0);
-            Ponto TYnextZ =     Ponto((j+1) * part,1 - i* part, 0);
-            Ponto TnextYZ =     Ponto(j * part,1 - (i+1) * part, 0);
-            Ponto TYZ =         Ponto(j * part,1 - i * part, 0);
+
+
+            Ponto TnextYnextZ = Ponto(1,1, 0);
+            Ponto TYnextZ =     Ponto(1,0, 0);
+            Ponto TnextYZ =     Ponto(0,1, 0);
+            Ponto TYZ =         Ponto(0,0, 0);
 
             Ponto up = Ponto(-1,0,0);
             Ponto down = Ponto(1,0,0);
@@ -386,10 +391,10 @@ void getPointsBox (float length, int divisions,char *filename){
             Ponto up =  Ponto(0,0,-1);
             Ponto down =Ponto(0,0,1);
 
-            Ponto TXY =         Ponto(j * part,1 -(i * part),0);
-            Ponto TnextXY =     Ponto((j+1) * part,1 -(i * part), 0);
-            Ponto TXnextY =     Ponto(j * part,1 -((i+1) * part), 0);
-            Ponto TnextXnextY = Ponto((j+1) * part,1-((i+1) * part), 0);
+            Ponto TXY =         Ponto(0,0 ,0);
+            Ponto TnextXY =     Ponto(1,0 , 0);
+            Ponto TXnextY =     Ponto(0,1, 0);
+            Ponto TnextXnextY = Ponto(1,1, 0);
 
 
 
@@ -539,6 +544,7 @@ void getPointsTorus (float raio_in, float raio_out, int slices, int stacks,char 
             Ponto pd2 = Ponto(d2X,d2Y,d2Z);
             Ponto pd3 = Ponto(d3X,d3Y,d2Z);
 
+
             Ponto up = Ponto(0,0,-1);
             Ponto down = Ponto(0,0,1);
 
@@ -594,16 +600,7 @@ Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
 
 }
 
-Ponto getNormalPoint(Ponto p1, Ponto p2, Ponto p3){
-    float v12[4] = {p2.x - p1.x,p2.y - p1.y,p2.z - p1.z,0};
-    float v13[4] = {p3.x - p1.x,p3.y - p1.y,p3.z - p1.z,0};
 
-    float res[4];
-
-    utils::cross(v12,v13,res);
-    utils::normalize(res);
-    return Ponto(res[0],res[1],res[2]);
-}
 
 void getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Ponto> pontos,char *filename){
     float part = 1.0f/(float)tesselation;
@@ -621,7 +618,6 @@ void getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Pont
                 Ponto p1 = pontos[(patch[index + 1])];
                 Ponto p2 = pontos[(patch[index + 2])];
                 Ponto p3 = pontos[(patch[index + 3])];
-
                 Ponto p = getBezierPoint(u, p0, p1, p2, p3);
                 curve.push_back(p);
             }
@@ -650,9 +646,6 @@ void getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Pont
                 Ponto NupNext = upNext.getNormal();
                 Ponto NbotNext = botNext.getNormal();
 
-
-                //Ponto n1 = getNormalPoint(botNow,upNow,upNext);
-                //Ponto n2 = getNormalPoint(upNext,botNext,botNow);
 
 
                 Ponto TupNow =  Ponto((u)*part,  (i)*part,0);

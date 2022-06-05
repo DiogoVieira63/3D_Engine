@@ -31,7 +31,7 @@ public:
     Camera *cam;
 
 
-    xmlParser(Camera *cam,GLuint * textures){
+    xmlParser(Camera *cam,GLuint *textures){
         this->cam = cam;
         this->textures = textures;
     }
@@ -39,7 +39,7 @@ public:
     Group* readXml(const char *filename);
 
 private:
-    GLuint * textures;
+    GLuint *textures;
     map<string, pair<unsigned int *,unsigned int>> mapArraysModel;
     map<string ,pair<bool,unsigned int>> mapTextures;
     void readFile(Model *m);

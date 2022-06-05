@@ -27,7 +27,7 @@ double timebase,tim = 0, timeStop = 0;
 
 Group *groupMain;
 Camera cam;
-GLuint textures[20];
+GLuint textures[100];
 
 
 void drawGroup(Group *g) {
@@ -292,6 +292,7 @@ int main(int argc, char **argv) {
     float timeSinceStart = (float )std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
 
 
+
     printf("Ready to draw | time of preparation :%fs\n", timeSinceStart/1000);
 
     //  OpenGL settings
@@ -307,6 +308,7 @@ int main(int argc, char **argv) {
 
     GLfloat dark[4] = {0.2, 0.2, 0.2, 1.0};
     GLfloat white[4] = {1.0, 1.0, 1.0, 1.0};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
     for (int i = 0; i < lightSize;i++) {
         glEnable(GL_LIGHT0 +i);
         glLightfv(GL_LIGHT0+i, GL_AMBIENT, dark);

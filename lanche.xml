@@ -1,0 +1,266 @@
+<world>
+    <camera>
+        <position x="8" y="3" z="8" rMax="14"/>
+        <lookAt x="0" y="0" z="0"/>
+        <up x="0" y="1" z="0"/>
+        <projection fov="60" near="1" far="1000"/>
+    </camera>
+    <lights>
+        <light type="point" posX=" 7" posY="1" posZ=" 0"/>
+        <!--light type="point" posX="-7" posY="12.5" posZ=" 0"/-->
+        <!--light type="point" posX=" 7" posY="12.5" posZ="-7" /-->
+        <!--light type="point" posX="-7" posY="12.5" posZ=" 7" /-->
+        <!--light type="point" posX="-7" posY="12.5" posZ="-7" /-->
+        <!--light type="point" posX="0" posY="5" posZ="0" /-->
+
+        <!--light type="spotlight" posX="0" posY="20" posZ="0"
+                dirX="0" dirY="-1" dirZ="0"
+                cutoff="50" /-->
+    </lights>
+    <group>
+        <transform>
+            <translate x="0" y="-11.5" z="0"/>
+        </transform>
+        <models>
+	        <model file="chao.3d">
+                    <texture file="wood.jpeg"/>
+            </model>
+        </models>
+        <group>
+                <transform>
+                    <translate x="14" y="12.5" z="0"/>
+                </transform>
+                <models>
+                    <model file="sphere.3d">
+                        <color>
+                            <diffuse R="255" G="255" B="255" />
+                            <ambient R="255" G="255" B="255" />
+                            <specular R="0" G="0" B="0" />
+                            <emissive R="255" G="255" B="255" />
+                            <shininess value="0" />
+                        </color>
+                    </model>
+                </models>
+        </group>
+        <group>
+            <transform>
+                <scale x="4" y="4" z="4"/>
+                <translate x="0" y="2.75" z="3.5"/>
+                <rotate angle="90" x="1" y="0" z="0"/>
+            </transform>
+            <models>
+	    	    <model file="chao.3d">
+                </model>
+            </models>
+        </group>
+        <group>
+            <color r="90" g="90" b="90"/>
+            <transform>
+                <scale x="4" y="4" z="4"/>
+                <translate x="0" y="2.75" z="-3.5"/>
+                <rotate angle="90" x="1" y="0" z="0"/>
+            </transform>
+            <color r="222" g="184" b="135"/>
+            <models>
+	    	    <model file="chao.3d">
+                </model>
+            </models>
+        </group>
+        <group>
+            <color r="90" g="90" b="90"/>
+            <transform>
+                <scale x="4" y="4" z="4"/>
+                <translate x="3.5" y="2.75" z="0"/>
+                <rotate angle="90" x="0" y="0" z="1"/>
+            </transform>
+            <color r="222" g="184" b="135"/>
+            <models>
+	    	    <model file="chao.3d">
+                </model>
+            </models>
+        </group>
+        <group>
+            <color r="90" g="90" b="90"/>
+            <transform>
+                <scale x="4" y="4" z="4"/>
+                <translate x="-3.5" y="2.75" z="0"/>
+                <rotate angle="90" x="0" y="0" z="1"/>
+            </transform>
+            <color r="222" g="184" b="135"/>
+            <models>
+	    	    <model file="chao.3d">
+                </model>
+            </models>
+        </group>
+        <group>
+            <color r="80" g="80" b="80"/>
+	    	<models>
+	    	    <model file="chao.3d">
+                    <texture file="box.jpg"/>
+                </model>
+	    	</models>
+            <transform>
+                <translate x="0" y="-3" z="0"/>
+                <scale x="4" y="4" z="4"/>
+            </transform>
+	    </group>
+        <group>
+            <color r="80" g="80" b="80"/>
+	    	<models>
+	    	    <model file="chao.3d">
+                </model>
+	    	</models>
+            <transform>
+                <translate x="0" y="25" z="0"/>
+                <scale x="4" y="4" z="4"/>
+                <rotate angle="180" x="1" y="0" z="0"/>
+            </transform>
+	    </group>
+        <group>
+            <color r="139" g="69" b="19"/>
+	    	<models>
+	        <model file="perna.3d">
+                    <texture file="wood.jpeg"/>
+            </model>
+	    	</models>
+            <transform>
+                <translate x="-3" y="-1.51" z="-3"/>
+            </transform>
+	    </group>
+        <group>
+	    	<models>
+	        <model file="perna.3d">
+                    <texture file="wood.jpeg"/>
+            </model>
+	    	</models>
+            <transform>
+                <translate x="3" y="-1.51" z="-3"/>
+            </transform>
+	    </group>
+        <group>
+	    	<models>
+	        <model file="perna.3d">
+                    <texture file="wood.jpeg"/>
+            </model>
+	    	</models>
+            <transform>
+                <translate x="3" y="-1.51" z="3"/>
+            </transform>
+	    </group>
+        <group>
+	    	<models>
+	        <model file="perna.3d">
+                    <texture file="wood.jpeg"/>
+            </model>
+	    	</models>
+            <transform>
+                <translate x="-3" y="-1.51" z="3"/>
+            </transform>
+	    </group>
+	    <group>
+            <transform>
+                <rotate time="10" x="0" y="1" z="0"/>
+            </transform>
+            <group>
+                <color r="190" g="190" b="190"/>
+	        	<models>
+	        		<model file="teacup.3d">	   
+                        <texture file="teapot.jpg"/>
+                    </model>
+	        	</models>
+                <transform>
+                    <translate x="2.5" y="0" z="0"/>
+	        	    <rotate angle="-90" x="0" y="1" z="0"/>
+                </transform>
+	        </group>
+	        <group>
+	        	<models>
+	        		<model file="teacup.3d">	   
+                        <texture file="teapot.jpg"/>
+                    </model>
+	        	</models>
+                <transform>
+                    <translate x="0" y="0" z="2.5"/>
+	        	    <rotate angle="180" x="0" y="1" z="0"/>
+                </transform>
+	        </group>
+	        <group>
+	        	<models>
+	        		<model file="teacup.3d">	   
+                        <texture file="teapot.jpg"/>
+                    </model>
+	        	</models>
+                <transform>
+                    <translate x="0" y="0" z="-2.5"/>
+                </transform>
+	        </group>
+            <group>
+                <color r="39" g="55" b="100"/>
+                <transform>
+                    <translate x="-2" y="0" z="0"/>
+		            <rotate angle="-90" x="1" y="0" z="0"/>
+		            <scale x="0.50" y="0.50" z="0.50"/>
+                </transform>
+                <models>
+                    <model file="bezier.3d">
+                        <texture file="teapot.jpg"/>
+                    </model>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="0.8" z="2.5"/>
+                    <rotate angle="180" x="1" y="0" z="0"/>
+
+                </transform>
+                <models>
+                    <model file="cafe.3d">
+                        <color>
+                            <diffuse R="189" G="149" B="111" />
+                            <ambient R="189" G="149" B="111" />
+                            <specular R="0" G="0" B="0" />
+                            <emissive R="0" G="0" B="0" />
+                            <shininess value="0" />
+                        </color>
+                    </model>
+
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="2.5" y="0.8" z="0"/>
+                    <rotate angle="180" x="1" y="0" z="0"/>
+
+                </transform>
+                <models>
+                    <model file="cafe.3d">
+                        <color>
+                            <diffuse R="189" G="149" B="111" />
+                            <ambient R="189" G="149" B="111" />
+                            <specular R="0" G="0" B="0" />
+                            <emissive R="0" G="0" B="0" />
+                            <shininess value="0" />
+                        </color>
+                    </model>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="0.8" z="-2.5"/>
+                    <rotate angle="180" x="1" y="0" z="0"/>
+                </transform>
+                <models>
+                    <model file="cafe.3d">
+                        <color>
+                            <diffuse R="189" G="149" B="111" />
+                            <ambient R="189" G="149" B="111" />
+                            <specular R="0" G="0" B="0" />
+                            <emissive R="0" G="0" B="0" />
+                            <shininess value="0" />
+                        </color>
+                    </model>
+                </models>
+            </group>
+        </group>
+    </group>
+</world>

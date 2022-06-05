@@ -374,11 +374,14 @@ Group * xmlParser::readXml(const char *filename) {
     Group* groupMain = readGroup(pElement);
     printf("Parsing completed\n");
 
+    int size = (int)mapTextures.size();
+    //textures = (GLuint *) malloc(sizeof (GLuint) * size);
+
     printf("Reading files and generating buffers...\n");
     readModels(groupMain);
 
     printf("Buffers generated:\n");
-    int size = (int)mapArraysModel.size();
+    size = (int)mapArraysModel.size();
     printf("Models : %d\n",size);
     size = (int)mapTextures.size();
     printf("Textures : %d\n",size);
@@ -484,7 +487,6 @@ void xmlParser::readFile(Model *m) {
         throw (s);
     }
     vector<float> vertices = readVerticesFile(&file);
-
     vector<float> normal = readVerticesFile(&file);
     vector<float> tex = readVerticesFileText(&file);
 
