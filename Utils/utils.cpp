@@ -33,14 +33,12 @@ void utils::cross(float *a, float *b, float *res) {
 void utils::normalize(float *a) {
 
     float l = sqrt(a[0]*a[0] + a[1] * a[1] + a[2] * a[2]);
+    if(l == 0) l = 0.0000001;
     a[0] = a[0]/l;
     a[1] = a[1]/l;
     a[2] = a[2]/l;
 }
 
-void utils::printPonto(Ponto p) {
-    printf("%f | %f | %f\n",p.x,p.y,p.z);
-}
 
 float utils::toDegree(float angle) {
     return angle  * 180/M_PI;

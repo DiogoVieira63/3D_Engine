@@ -8,6 +8,8 @@
 
 Model::Model (const char *file) {
     filename = string(file);
+    color = Color();
+    parText= pair<bool,unsigned int>(false,-2);
 }
 
 void Model::addPonto(Ponto p) {
@@ -17,4 +19,9 @@ void Model::addPonto(Ponto p) {
 void Model::setSize(int n) {
     pontos.clear();
     pontos.reserve(n);
+}
+
+void Model::setTexFilename(const char *file){
+    texFilename = string(file);
+    parText= pair<bool,unsigned int>(true,-1);
 }

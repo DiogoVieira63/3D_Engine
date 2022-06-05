@@ -7,12 +7,12 @@
 
 #include <cmath>
 #include <stdio.h>
-#include "../Engine/Ponto.h"
 
 
 class utils {
 public:
 
+    static bool rotate;
 
     static void multMatrixVector(float m[4][4], float *v, float *res);
 
@@ -24,7 +24,6 @@ public:
 
     static void normalize(float *a);
 
-    static void printPonto(Ponto p);
 
     static float toDegree(float angle);
 

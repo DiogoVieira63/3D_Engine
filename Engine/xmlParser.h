@@ -24,26 +24,36 @@ using namespace std;
 #include "Group.h"
 #include "Camera.h"
 #include "../Utils/utils.h"
-
+#include <IL/il.h>
 
 class xmlParser {
 public:
-    map<string, pair<unsigned int,unsigned int>> mapArraysModel;
     Camera *cam;
 
 
-    xmlParser(map<string, pair<unsigned int,unsigned int>> mapArraysModel,Camera *cam){
-        this->mapArraysModel = move(mapArraysModel);
+    xmlParser(Camera *cam,GLuint * textures){
         this->cam = cam;
+        this->textures = textures;
     }
 
     Group* readXml(const char *filename);
 
 private:
-    int readFile(Model *m);
+    GLuint * textures;
+    map<string, pair<unsigned int *,unsigned int>> mapArraysModel;
+    map<string ,pair<bool,unsigned int>> mapTextures;
+    void readFile(Model *m);
     Group * readGroup(XMLElement *pElement);
     void readModels(Group *g);
 
+    vector<float> readVerticesFileText(ifstream *pIfstream);
+
+    void readColor(XMLElement *pElement, Model *m);
+
+
+    void setupTexture(Model *m);
+
+    void loadTexture(Model *m, GLuint num);
 };
 
 

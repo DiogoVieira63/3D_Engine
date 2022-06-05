@@ -4,13 +4,19 @@
 
 #ifndef CLASS4_PONTO_H
 #define CLASS4_PONTO_H
-
+#include "../Utils/utils.h"
 
 class Ponto {
 public:
     float x;
     float y;
     float z;
+
+    Ponto(){
+        this->x = 0;
+        this->y = 0;
+        this->z = 0;
+    }
 
     Ponto(float x, float y, float z) {
         this->x = x;
@@ -24,6 +30,9 @@ public:
         if(i== 2)return z;
         return 0;
     }
+
+
+    Ponto getNormal();
 
 
 };

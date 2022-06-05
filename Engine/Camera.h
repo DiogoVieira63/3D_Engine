@@ -13,9 +13,10 @@
 #define _USE_MATH_DEFINES
 
 #include <math.h>
+#include <vector>
 #include "../Utils/utils.h"
-
-
+#include "Light.h"
+using namespace std;
 
 class Camera {
 public:
@@ -27,6 +28,8 @@ public:
     float radiusMax;
     float sensibility = 1;
     float fov,near,far;
+    vector<Light *> lights;
+
 
     void setPos(float posX,float posY,float posZ);
 
@@ -41,7 +44,6 @@ public:
     void setCamera();
 
     void changeDir(float deltaX, float deltaY);
-
 
     void moveCamera(float deltaY, float pX, float pY, float pZ);
 

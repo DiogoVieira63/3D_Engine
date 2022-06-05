@@ -76,6 +76,10 @@ void Camera::setCamera() {
     gluLookAt(pos[0], pos[1],pos[2],
               pos[0] + d[0], pos[1] + d[1], pos[2] + d[2],
               up[0], up[1], up[2]);
+    for(auto l: lights)
+        l->doAction();
+
+
 }
 
 void Camera::setRadiusMax(float rMax) {

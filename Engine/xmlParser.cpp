@@ -95,6 +95,42 @@ void readTransform(XMLElement *pElement, Group *grupo) {
 }
 
 
+void xmlParser::readColor(XMLElement *pElement, Model *m){
+    float r,g,b;
+    XMLElement *pElement2 = pElement->FirstChildElement("diffuse");
+    r = pElement2->FloatAttribute("R", 200);
+    g = pElement2->FloatAttribute("G", 200);
+    b = pElement2->FloatAttribute("B", 200);
+
+
+    (*m).color.setDiffuse(r,g,b);
+
+    pElement2 = pElement->FirstChildElement("ambient");
+    r = pElement2->FloatAttribute("R", 50);
+    g = pElement2->FloatAttribute("G", 50);
+    b = pElement2->FloatAttribute("B", 50);
+    (*m).color.setAmbient(r,g,b);
+
+    pElement2 = pElement->FirstChildElement("specular");
+    r = pElement2->FloatAttribute("R", 0);
+    g = pElement2->FloatAttribute("G", 0);
+    b = pElement2->FloatAttribute("B", 0);
+
+    (*m).color.setSpecular(r,g,b);
+
+    pElement2 = pElement->FirstChildElement("emissive");
+    r = pElement2->FloatAttribute("R", 0);
+    g = pElement2->FloatAttribute("G", 0);
+    b = pElement2->FloatAttribute("B", 0);
+
+    (*m).color.setEmissive(r,g,b);
+
+
+    pElement2 = pElement->FirstChildElement("shininess");
+    float value = pElement2->FloatAttribute("value", 0);
+    (*m).color.shininess = value;
+}
+
 Group * xmlParser::readGroup(XMLElement *pElement) {
     auto *group = new Group();
     XMLElement *pElement2;
@@ -103,19 +139,46 @@ Group * xmlParser::readGroup(XMLElement *pElement) {
     if (pElement2 != nullptr) {
         pElement3 = pElement2->FirstChildElement("model");
         const char *file;
+        Model *m;
         while (pElement3 != nullptr) {
             file = pElement3->Attribute("file");
-            auto *m = new Model(file);
+            m = new Model(file);
             (*group).addModel(m);
 
+
             if (mapArraysModel.find(file) == mapArraysModel.end()) {
-                unsigned  int size = mapArraysModel.size();
-                mapArraysModel.insert(pair<string,pair<unsigned int,unsigned int>>(file,pair<unsigned int,unsigned int>(size,-1)));
+                unsigned  int size = mapArraysModel.size()*3;
+                auto *vectorS = (unsigned int *)malloc(sizeof (unsigned int) *3);
+                vectorS[0] = size;
+                vectorS[1] = size+1;
+                vectorS[2] = size+2;
+
+                pair<unsigned int*,unsigned int> par = pair<unsigned int*,unsigned int>(vectorS,-1);
+                mapArraysModel.insert(pair<string,pair<unsigned int*,unsigned int>>(file,par));
             }
+
+            XMLElement *pElement4 = pElement3->FirstChildElement("color");
+            if (pElement4 != nullptr){
+                readColor(pElement4,m);
+            }
+
+            pElement4 = pElement3->FirstChildElement("texture");
+            if (pElement4 != nullptr){
+                const char* texFilename;
+                texFilename = pElement4->Attribute("file");
+                (*m).setTexFilename(texFilename);
+                if(mapTextures.find(texFilename) == mapTextures.end()){
+                    unsigned int size = mapTextures.size();
+                    mapTextures.insert(pair<string,pair<bool,unsigned >>(texFilename,pair<bool,unsigned int>(false,size)));
+                }
+            }
+
 
             pElement3 = pElement3->NextSiblingElement("model");
         }
+
     }
+
     pElement2 = pElement->FirstChildElement("transform");
     if (pElement2!= nullptr){
         readTransform(pElement2,group);
@@ -130,20 +193,9 @@ Group * xmlParser::readGroup(XMLElement *pElement) {
         for(int i = 0; i < units;i++) {
             auto grupoAdd = new Group();
             (*grupoAdd).models = (*group).models;
-            (*grupoAdd).cor = (*group).cor;
             readTransform(pElement2, grupoAdd);
             (*group).addSubGroup(grupoAdd);
         }
-    }
-    pElement2 = pElement->FirstChildElement("color");
-    if (pElement2 != nullptr) {
-        float r, g, b;
-        pElement2->QueryFloatAttribute("r", &r);
-        pElement2->QueryFloatAttribute("g", &g);
-        pElement2->QueryFloatAttribute("b", &b);
-        Color cor(r, g, b);
-
-        (*group).cor = cor;
     }
 
     pElement2 = pElement->FirstChildElement("group");
@@ -152,6 +204,7 @@ Group * xmlParser::readGroup(XMLElement *pElement) {
         (*group).addSubGroup(subGroup);
         pElement2 = pElement2->NextSiblingElement("group");
     }
+
     return group;
 }
 
@@ -248,8 +301,60 @@ int readCamera(Camera *camera, XMLElement *pElement) {
 
     return 0;
 }
+int readLights(Camera *camera, XMLElement *pElement) {
+    XMLElement *pElement2 = pElement->FirstChildElement("light");
+    while(pElement2 != nullptr){
+        const char *type;
+        type = pElement2->Attribute("type");
 
-Group * xmlParser::readXml(const char *filename ) {
+
+        int lightNum = (int) camera->lights.size();
+
+        if(lightNum >= 9) break;
+
+        if(!strcmp(type,"point")){
+            float x, y,z;
+            pElement2->QueryFloatAttribute("posX",&x);
+            pElement2->QueryFloatAttribute("posY",&y);
+            pElement2->QueryFloatAttribute("posZ",&z);
+            Ponto ponto = Ponto(x,y,z);
+
+            auto *light = new LightPoint(ponto, lightNum);
+            camera->lights.push_back(light);
+        }
+        if(!strcmp(type,"directional")){
+            float x, y,z;
+            pElement2->QueryFloatAttribute("dirX",&x);
+            pElement2->QueryFloatAttribute("dirY",&y);
+            pElement2->QueryFloatAttribute("dirZ",&z);
+            Ponto ponto = Ponto(x,y,z);
+
+            auto *light = new LightDirectional(ponto, lightNum);
+            camera->lights.push_back(light);
+        }
+        if(!strcmp(type,"spotlight")){
+            float x, y,z;
+            pElement2->QueryFloatAttribute("posX",&x);
+            pElement2->QueryFloatAttribute("posY",&y);
+            pElement2->QueryFloatAttribute("posZ",&z);
+            Ponto posPonto = Ponto(x,y,z);
+            pElement2->QueryFloatAttribute("dirX",&x);
+            pElement2->QueryFloatAttribute("dirY",&y);
+            pElement2->QueryFloatAttribute("dirZ",&z);
+            Ponto dirPonto = Ponto(x,y,z);
+            float cutoff;
+            pElement2->QueryFloatAttribute("cutoff",&cutoff);
+            auto *light = new LightSpotLight(posPonto,lightNum,dirPonto,cutoff);
+            camera->lights.push_back(light);
+        }
+
+        pElement2 = pElement2->NextSiblingElement();
+    }
+    return 0;
+}
+
+
+Group * xmlParser::readXml(const char *filename) {
     XMLDocument xmlDoc;
     XMLError erro = xmlDoc.LoadFile(filename);
     if (erro != XML_SUCCESS){
@@ -260,65 +365,178 @@ Group * xmlParser::readXml(const char *filename ) {
 
     XMLElement *pElement = pRoot->FirstChildElement("camera");
     readCamera(cam,pElement);
+    pElement = pRoot->FirstChildElement("lights");
+    if(pElement != nullptr) readLights(cam,pElement);
+
+
 
     pElement = pRoot->FirstChildElement("group");
     Group* groupMain = readGroup(pElement);
+    printf("Parsing completed\n");
 
+    printf("Reading files and generating buffers...\n");
     readModels(groupMain);
+
+    printf("Buffers generated:\n");
+    int size = (int)mapArraysModel.size();
+    printf("Models : %d\n",size);
+    size = (int)mapTextures.size();
+    printf("Textures : %d\n",size);
+
 
     return groupMain;
 }
 
+vector<float> readVerticesFile(ifstream *file){
+    vector<float> vectorPoints;
+    int nrVertices;
+    if(*file >> nrVertices) {
+        for (int i = 0; i < nrVertices; i++) {
+            float x, y, z;
+            *file >> x;
+            *file >> y;
+            *file >> z;
 
-int xmlParser::readFile(Model *m) {
+            vectorPoints.push_back(x);
+            vectorPoints.push_back(y);
+            vectorPoints.push_back(z);
+        }
+    }
+    return vectorPoints;
+}
+
+vector<float> xmlParser::readVerticesFileText(ifstream *file) {
+    int nrVertices;
+
+    vector<float> vectorPoints;
+    if(*file >> nrVertices) {
+        for (int i = 0; i < nrVertices; i++) {
+            float x, y, z;
+            *file >> x;
+            *file >> y;
+            *file >> z;
+
+            vectorPoints.push_back(x);
+            vectorPoints.push_back(y);
+        }
+    }
+    return vectorPoints;
+}
+
+
+void xmlParser::loadTexture(Model *m,GLuint num) {
+
+    unsigned int t, tw, th;
+    unsigned char *texData;
+    ilGenImages(1, &t);
+    ilBindImage(t);
+    ilLoadImage((ILstring)(*m).texFilename.c_str());
+    tw = ilGetInteger(IL_IMAGE_WIDTH);
+    th = ilGetInteger(IL_IMAGE_HEIGHT);
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+    texData = ilGetData();
+
+    glGenTextures(1, &textures[num]);
+
+
+
+    glBindTexture(GL_TEXTURE_2D, textures[num]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+    //glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void xmlParser::setupTexture(Model *m){
+    auto parArray = mapArraysModel.find((*m).filename);
+
+    if((*m).parText.second == -1) {
+
+        auto tex = mapTextures.find((*m).texFilename);
+        (*m).parText.second = tex->second.second;
+        if(!tex->second.first) {
+
+            loadTexture(m,tex->second.second);
+
+            tex->second.first = true;
+
+        }
+    }
+}
+
+void xmlParser::readFile(Model *m) {
+
     string filename = (*m).filename;
     auto parArray = mapArraysModel.find(filename);
     if (parArray->second.second != -1){
         (*m).parArray = parArray->second;
-        return 0;
+        setupTexture(m);
+        return;
     }
-
     ifstream file(filename);
     if (file.fail()){
         string s = "Ficheiro model '" + filename + "' não existe.";
         throw (s);
     }
-    int nrVertices;
-    file >> nrVertices;
-    vector<float> vectorPoints;
-    for (int i = 0; i < nrVertices; i++) {
-        float x, y, z;
-        file >> x;
-        file >> y;
-        file >> z;
+    vector<float> vertices = readVerticesFile(&file);
 
-        vectorPoints.push_back(x);
-        vectorPoints.push_back(y);
-        vectorPoints.push_back(z);
+    vector<float> normal = readVerticesFile(&file);
+    vector<float> tex = readVerticesFileText(&file);
+
+    setupTexture(m);
+
+    file.close();
+
+
+    glGenBuffers(1, &parArray->second.first[0]);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, parArray->second.first[0]);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(float) * vertices.size(),vertices.data(),GL_STATIC_DRAW);
+
+
+    if (!normal.empty()){
+        glGenBuffers(1, &parArray->second.first[1]);
+        glBindBuffer(GL_ARRAY_BUFFER, parArray->second.first[1]);
+        glBufferData(GL_ARRAY_BUFFER,sizeof(float) * normal.size(),normal.data(),GL_STATIC_DRAW);
     }
 
-    glGenBuffers(1, &parArray->second.first);
 
-    glBindBuffer(GL_ARRAY_BUFFER, parArray->second.first);
-    glBufferData(
-            GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
-            sizeof(float) * vectorPoints.size(), // tamanho do vector em bytes
-            vectorPoints.data(), // os dados do array associado ao vector
-            GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)
-    unsigned int verticeCount = vectorPoints.size()/3;
+    if (!tex.empty()) {
+        glGenBuffers(1, &parArray->second.first[2]);
+        glBindBuffer(GL_ARRAY_BUFFER, parArray->second.first[2]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tex.size(), tex.data(), GL_STATIC_DRAW);
+    }
 
+
+
+    unsigned int verticeCount = vertices.size()/3;
     parArray->second.second = verticeCount;
     (*m).parArray = parArray->second;
 
-    return 0;
+
+
 }
 
 void xmlParser::readModels(Group *g) {
 
-    for (auto m: (*g).models)
+    for (auto m: (*g).models){
         readFile(m);
+    }
 
-    for (auto g1: g->subGroups)
+
+    for (auto g1: g->subGroups) {
         readModels(g1);
+    }
+
 
 }
+
+
+
+

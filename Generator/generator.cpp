@@ -16,17 +16,36 @@ using namespace std;
 #include "../Engine/Ponto.h"
 #include "../Utils/utils.h"
 
+void writePontos(ofstream *file, vector<Ponto> vect){
+    int nrVertices = vect.size();
+    *file << nrVertices << '\n';
+    for (Ponto p : vect){
+        *file << p.x << ' ';
+        *file << p.y << ' ';
+        *file << p.z << ' ';
+        *file << '\n';
+    }
+}
+
+void writeFile(vector<Ponto> vect,vector<Ponto> normal,vector<Ponto> textures, char *filename){
+    ofstream file;
+    //some
+    file.open(filename);
+    writePontos(&file,vect);
+    writePontos(&file,normal);
+    writePontos(&file,textures);
+    file.close();
+
+}
+
 void writeFile(vector<Ponto> vect, char *filename){
     ofstream file;
+    //some
     file.open(filename);
-    int nrVertices = vect.size();
-    file << nrVertices << '\n';
-    for (Ponto p : vect){
-        file << p.x << ' ';
-        file << p.y << ' ';
-        file << p.z << ' ';
-        file << '\n';
-    }
+    writePontos(&file,vect);
+
+    file.close();
+
 }
 
 
@@ -38,13 +57,16 @@ void addTriangle(vector<Ponto> *vector,Ponto p0,Ponto p1,Ponto p2){
 }
 
 
-vector<Ponto> getPointsPlane (float length,int divisions){
+void getPointsPlane (float length,int divisions,char* filename){
 
     float inicial_posX = - length/2;
     float inicial_posZ = inicial_posX;
     float part = length/(float )divisions;
 
-    vector<Ponto>vector;
+    float partText = 1.0f/(float )divisions;
+
+    vector<Ponto> vector, textures, normal;
+
 
     for (int i = 0;i < divisions;i++){
         float posX = inicial_posX + (float) i * part;
@@ -56,23 +78,57 @@ vector<Ponto> getPointsPlane (float length,int divisions){
             Ponto botNext = Ponto(posX + part, 0, posZ + part);
             Ponto botNow = Ponto(posX, 0, posZ + part);
 
+            Ponto up = Ponto(0,1,0);
+
+            Ponto down= Ponto(0,-1,0);
+
+            //Ponto TupNow = Ponto(  (float)i * partText,(float)j * partText, 0);
+            //Ponto TupNext = Ponto( (float)(i+1) * (partText),(float) j * partText, 0);
+            //Ponto TbotNext = Ponto((float)(i+1) * (partText),(float)  (j+1) * (partText), 0);
+            //Ponto TbotNow = Ponto( (float)i * partText,(float)(j+1) * (partText), 0);
+
+            Ponto TupNow = Ponto(  0,0, 0);
+            Ponto TupNext = Ponto( 1,0, 0);
+            Ponto TbotNext = Ponto(1,1, 0);
+            Ponto TbotNow = Ponto( 0,1, 0);
+
+
             addTriangle(&vector,botNext,upNext,upNow);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&textures,TbotNext,TupNext,TupNow);
+
+
             addTriangle(&vector,upNow,upNext,botNext);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&textures,TupNow,TupNext,TbotNext);
+
 
             addTriangle(&vector,upNow,botNow,botNext);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&textures,TupNow,TbotNow,TbotNext);
+
+
             addTriangle(&vector,botNext,botNow,upNow);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&textures,TbotNext,TbotNow,TupNow);
+
 
         }
     }
-    return vector;
+    writeFile(vector,normal,textures,filename);
+
 }
 
 
-vector<Ponto> getPointsCone(float r, float height, int slices,int stacks) {
+void getPointsCone(float r, float height, int slices,int stacks,char *filename) {
     float anglePart = 2 * M_PI / slices;
     float heightPart = height/(float)stacks;
     float initialHeight =0;
-    vector<Ponto> vector;
+    vector<Ponto> vector, textures, normal;
+
+    float textV = 1.0f/(float)stacks;
+    float textH = 1.0f/(float)slices;
+
 
     for (int i = 0; i < slices;i++) {
         float angle = ((float) i) * anglePart;
@@ -90,9 +146,28 @@ vector<Ponto> getPointsCone(float r, float height, int slices,int stacks) {
             Ponto downNow = Ponto(rDown* sin(angle),heightDown,rDown* cos(angle));
             Ponto downNext = Ponto(rDown* sin(nextAngle),heightDown,rDown* cos(nextAngle));
 
+            Ponto NupNext =    upNext.getNormal();
+            Ponto NupNow =      upNow.getNormal();
+            Ponto NdownNow =    downNow.getNormal();
+            Ponto NdownNext =   downNext.getNormal();
+
+            Ponto TupNow =      Ponto(i*textH,(j+1) * textV,0);
+            Ponto TupNext =     Ponto((i+1)*textH,(j+1) * textV,0);
+            Ponto TdownNow =    Ponto(i*textH,j * textV,0);
+            Ponto TdownNext =   Ponto((i+1)*textH,j * textV,0);
+
+
+
             addTriangle(&vector,upNext,upNow,downNow);
+            addTriangle(&normal,NupNext,NupNow,NdownNow);
+            addTriangle(&textures,TupNext,TupNow,TdownNow);
+
+
 
             addTriangle(&vector,downNow,downNext,upNext);
+            addTriangle(&normal,NdownNow,NdownNext,NupNext);
+            addTriangle(&textures,TdownNow,TdownNext,TupNext);
+
 
         }
 
@@ -100,22 +175,41 @@ vector<Ponto> getPointsCone(float r, float height, int slices,int stacks) {
         Ponto baseNow = Ponto(r * sin(angle), initialHeight, r * cos(angle));
         Ponto center = Ponto(0, initialHeight, 0);
 
+        Ponto down = Ponto(0,-1,0);
+
+        Ponto TbaseNext = Ponto((i+1)*textH,0,0);
+        Ponto TbaseNow = Ponto(i*textH,0,0);
+        Ponto Tcenter = Ponto((i+0.5)*textH,1,0);
+
         addTriangle(&vector,baseNext,baseNow,center);
+        addTriangle(&normal,down,down,down);
+        addTriangle(&textures,TbaseNext,TbaseNow,Tcenter);
 
     }
-    return vector;
+
+    writeFile(vector, normal,textures,filename);
 }
 
 
-vector<Ponto> getPointsSphere(float radius, int slices,int stacks){
+void getPointsSphere(float radius, int slices,int stacks,char *filename){
     float anglePart = 2 * M_PI / slices;
     float heightPart = M_PI/stacks;
     float initialAngle = -M_PI/2;
     //list<float> *list = new ::list<float>;
-    vector<Ponto> vector;
+    vector<Ponto> vector, textures, normal;
+
+    float textV = 1.0f/(float)stacks;
+    float textH = 1.0f/(float)slices;
+    printf("%f | %f\n",textV,textH);
+
+
     for (int i = 0; i < slices;i++) {
         float angle = ((float) i) * anglePart;
         float nextAngle = angle + anglePart;
+
+        float hNow = textH * (float)(i);
+        float hNext = textH * (float)(i+1);
+
         for (int j = 0; j < stacks; j++) {
 
             float angleUp =   initialAngle+ heightPart*(float)(j+1);
@@ -130,23 +224,48 @@ vector<Ponto> getPointsSphere(float radius, int slices,int stacks){
             Ponto downNow = Ponto (radius* cos(angleDown)*sin(angle),radius*sin(angleDown),radius* cos(angle)* cos(angleDown));
             Ponto downNext = Ponto(radius* cos(angleDown)*sin(nextAngle),radius*sin(angleDown), radius * cos(nextAngle)* cos(angleDown));
 
+
+            Ponto NupNow = upNow.getNormal();
+            Ponto NupNext = upNext.getNormal();
+            Ponto NdownNow = downNow.getNormal();
+            Ponto NdownNext = downNext.getNormal();
+
+
+
+            float vUp = 1 -textV * (float)(j+1);
+            float vDown = 1 - textV * (float)(j);
+
+
+            printf("H %f | V %f\n",hNow,vDown);
+
+            Ponto TupNow = Ponto(hNow,vUp,0);
+            Ponto TupNext = Ponto(hNext,vUp,0);
+            Ponto TdownNow = Ponto(hNow,vDown,0);
+            Ponto TdownNext = Ponto(hNext,vDown,0);
+
+
+
             addTriangle(&vector,upNow,downNow,downNext);
+            addTriangle(&normal,NupNow,NdownNow,NdownNext);
+            addTriangle(&textures,TupNow,TdownNow,TdownNext);
+
 
             addTriangle(&vector,upNext,upNow,downNext);
-
+            addTriangle(&normal,NupNext,NupNow,NdownNext);
+            addTriangle(&textures,TupNext,TupNow,TdownNext);
 
         }
     }
-    return vector;
+    writeFile(vector,normal,textures,filename);
 }
 
-vector<Ponto> getPointsBox (float length, int divisions){
+void getPointsBox (float length, int divisions,char *filename){
     float part = length/(float)divisions;
     float halfAltura = length/2;
     float initX = - halfAltura;
     float initZ = initX;
     //list<float> *list = new ::list<float>;
-    vector<Ponto> vector;
+    vector<Ponto> vector, normal, texture;
 
     // Y Constante
     for (int i = 0;i < divisions;i++){
@@ -161,16 +280,42 @@ vector<Ponto> getPointsBox (float length, int divisions){
             Ponto nextXZ = Ponto(nextPosX,halfAltura,posZ);
             Ponto XZ = Ponto(posX,halfAltura,posZ);
 
+            Ponto up = Ponto(0,1,0);
+            Ponto down = Ponto(0,-1,0);
+
+            Ponto TnextXnextZ = Ponto((i+1)*part,(j+1) * part,0);
+            Ponto TXnextZ = Ponto(i*part,(j+1) * part,0);
+            Ponto TnextXZ = Ponto((i+1)*part,j * part,0);
+            Ponto TXZ = Ponto(i*part,j * part,0);
+
+
             addTriangle(&vector,nextXnextZ,nextXZ,XZ);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TnextXnextZ,TnextXZ,TXZ);
+
+
+
             addTriangle(&vector,XZ,XnextZ,nextXnextZ);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TXZ,TXnextZ,TnextXnextZ);
+
 
             Ponto OnextXnextZ = Ponto(nextPosX,-halfAltura,nextPosZ);
             Ponto OXnextZ = Ponto(posX,-halfAltura,nextPosZ);
             Ponto OnextXZ = Ponto(nextPosX,-halfAltura,posZ);
             Ponto OXZ = Ponto(posX,-halfAltura,posZ);
 
+
             addTriangle(&vector,OXZ,OnextXZ,OnextXnextZ);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TXZ,TnextXZ,TnextXnextZ);
+
+
+
             addTriangle(&vector,OnextXnextZ,OXnextZ,OXZ);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TnextXnextZ,TXnextZ,TXZ);
+
 
         }
     }
@@ -187,9 +332,23 @@ vector<Ponto> getPointsBox (float length, int divisions){
             Ponto nextYZ = Ponto(initX, nextPosY, posZ);
             Ponto YZ = Ponto(initX, posY, posZ);
 
+            Ponto TnextYnextZ = Ponto((j+1) * part,1 - (i+1) * part, 0);
+            Ponto TYnextZ =     Ponto((j+1) * part,1 - i* part, 0);
+            Ponto TnextYZ =     Ponto(j * part,1 - (i+1) * part, 0);
+            Ponto TYZ =         Ponto(j * part,1 - i * part, 0);
+
+            Ponto up = Ponto(-1,0,0);
+            Ponto down = Ponto(1,0,0);
 
             addTriangle(&vector,YnextZ,YZ,nextYZ);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TYnextZ,TYZ,TnextYZ);
+
+
             addTriangle(&vector,YnextZ,nextYZ,nextYnextZ);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TYnextZ,TnextYZ,TnextYnextZ);
+
 
 
             Ponto OnextYnextZ = Ponto(-initX, nextPosY, nextPosZ);
@@ -199,7 +358,13 @@ vector<Ponto> getPointsBox (float length, int divisions){
 
 
             addTriangle(&vector,OnextYZ,OYZ,OYnextZ);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TnextYZ,TYZ,TYnextZ);
+
+
             addTriangle(&vector,OnextYnextZ,OnextYZ,OYnextZ);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TnextYnextZ,TnextYZ,TYnextZ);
 
 
         }
@@ -218,8 +383,25 @@ vector<Ponto> getPointsBox (float length, int divisions){
             Ponto nextXY = Ponto(nextPosX,posY, initZ);
             Ponto XY = Ponto(posX,posY, initZ);
 
+            Ponto up =  Ponto(0,0,-1);
+            Ponto down =Ponto(0,0,1);
+
+            Ponto TXY =         Ponto(j * part,1 -(i * part),0);
+            Ponto TnextXY =     Ponto((j+1) * part,1 -(i * part), 0);
+            Ponto TXnextY =     Ponto(j * part,1 -((i+1) * part), 0);
+            Ponto TnextXnextY = Ponto((j+1) * part,1-((i+1) * part), 0);
+
+
+
             addTriangle(&vector,XnextY,XY,nextXY);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TXnextY,TXY,TnextXY);
+
+
+
             addTriangle(&vector,nextXnextY,XnextY,nextXY);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&texture,TnextXnextY,TXnextY,TnextXY);
 
 
             Ponto OnextXnextY = Ponto(nextPosX,nextPosY, -initZ);
@@ -228,21 +410,31 @@ vector<Ponto> getPointsBox (float length, int divisions){
             Ponto OXY = Ponto(posX,posY, -initZ);
 
             addTriangle(&vector,OnextXY,OXY,OXnextY);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TnextXY,TXY,TXnextY);
+
+
+
             addTriangle(&vector,OnextXY,OXnextY,OnextXnextY);
+            addTriangle(&normal,down,down,down);
+            addTriangle(&texture,TnextXY,TXnextY,TnextXnextY);
+
 
 
         }
     }
-    return vector;
+    writeFile(vector,normal,texture,filename);
 }
 
-vector<Ponto> getPointsCylinder(float r, float height, int slices, int stacks) {
+void getPointsCylinder(float r, float height, int slices, int stacks,char *filename) {
     float anglePart = 2 * M_PI / slices;
     float halfHeight = height / 2;
     float heightPart = height/(float)stacks;
 
+    float textH = 1.0f/(float) slices;
+    float textV = 1.0f/(float) stacks;
 
-    vector<Ponto> vector;
+    vector<Ponto> vector, normal, texture;
 
 
     for (int i = 0; i < slices; i++) {
@@ -251,17 +443,34 @@ vector<Ponto> getPointsCylinder(float r, float height, int slices, int stacks) {
         float angle = ((float) i) * anglePart;
         float nextAngle = angle + anglePart;
 
+
         Ponto baseNow = Ponto(r * sin(angle), halfHeight, r * cos(angle));
         Ponto baseNext= Ponto(r * sin(nextAngle), halfHeight, r * cos(nextAngle));
         Ponto center = Ponto(0, halfHeight, 0);
 
+        Ponto up = Ponto(0,1,0);
+        Ponto down = Ponto(0,-1,0);
+
+        Ponto TbaseNext = Ponto((i+1)*textH,0,0);
+        Ponto TbaseNow = Ponto(i*textH,0,0);
+        Ponto Tcenter = Ponto((i+0.5)*textH,1,0);
+
+
+
         addTriangle(&vector,center,baseNow,baseNext);
+        addTriangle(&normal,up,up,up);
+        addTriangle(&texture,Tcenter,TbaseNow,TbaseNext);
+
 
         Ponto ObaseNow = Ponto(r * sin(angle), -halfHeight, r * cos(angle));
         Ponto ObaseNext= Ponto(r * sin(nextAngle), -halfHeight, r * cos(nextAngle));
         Ponto Ocenter = Ponto(0, -halfHeight, 0);
 
         addTriangle(&vector,ObaseNext,ObaseNow,Ocenter);
+        addTriangle(&normal,down,down,down);
+        addTriangle(&texture,TbaseNext,TbaseNow,Tcenter);
+
+
 
         for (int j = 0; j < stacks; j++) {
             float heightUp = -halfHeight + (heightPart * (float )(j+1));
@@ -273,21 +482,41 @@ vector<Ponto> getPointsCylinder(float r, float height, int slices, int stacks) {
             Ponto downNow = Ponto(r * sin(angle), heightDown, r * cos(angle));
             Ponto downNext= Ponto(r * sin(nextAngle), heightDown, r * cos(nextAngle));
 
+            Ponto NNow = Ponto(sin(angle), cos(angle),0);
+            Ponto NNext = Ponto(sin(nextAngle), cos(nextAngle),0);
+
+
+            Ponto TupNow =      Ponto(i*textH,(j+1) * textV,0);
+            Ponto TupNext =     Ponto((i+1)*textH,(j+1) * textV,0);
+            Ponto TdownNow =    Ponto(i*textH,j * textV,0);
+            Ponto TdownNext =   Ponto((i+1)*textH,j * textV,0);
+
+
             addTriangle(&vector,upNow,downNow,downNext);
+            addTriangle(&normal,NNow,NNow,NNext);
+            addTriangle(&texture,TupNow,TdownNow,TdownNext);
+
+
             addTriangle(&vector,upNext,upNow,downNext);
+            addTriangle(&normal,NNext,NNow,NNext);
+            addTriangle(&texture,TupNext,TupNow,TdownNext);
 
         }
     }
-    return vector;
+    writeFile(vector, normal,texture,filename);
 }
 
-vector<Ponto> getPointsTorus (float raio_in, float raio_out, int slices, int stacks){
+void getPointsTorus (float raio_in, float raio_out, int slices, int stacks,char * filename){
     float delta1= 2* M_PI / slices;
     float delta2= 2* M_PI / stacks;
     float phi = 0;
     float theta=0;
 
-    vector<Ponto> vector;
+    vector<Ponto> vector, textures, normal;
+
+    float partV = 1.0f/(float )stacks;
+    float partH = 1.0f/(float )slices;
+
 
     for (int i = 0; i < slices; ++i) {
         for (int j = 0; j < stacks; ++j) {
@@ -310,14 +539,31 @@ vector<Ponto> getPointsTorus (float raio_in, float raio_out, int slices, int sta
             Ponto pd2 = Ponto(d2X,d2Y,d2Z);
             Ponto pd3 = Ponto(d3X,d3Y,d2Z);
 
+            Ponto up = Ponto(0,0,-1);
+            Ponto down = Ponto(0,0,1);
+
+            Ponto TupNow    = Ponto(0,1,0);
+            Ponto TupNext   = Ponto(1,1,0);
+            Ponto TdownNow  = Ponto(0,0,0);
+            Ponto TdownNext = Ponto(1,0,0);
+
+
+
             addTriangle(&vector,p,pd1,pd3);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&textures,TdownNow,TdownNext,TupNext);
+
             addTriangle(&vector,pd3,pd2,p);
+            addTriangle(&normal,up,up,up);
+            addTriangle(&textures,TupNext,TupNow,TdownNow);
+
+
 
             phi = delta2 * (j+1);
         }
         theta = delta1 * (i+1);
     }
-    return vector;
+    writeFile(vector,normal,textures,filename);
 }
 
 Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
@@ -348,11 +594,20 @@ Ponto getBezierPoint(float t, Ponto p0,Ponto p1,Ponto p2,Ponto p3){
 
 }
 
+Ponto getNormalPoint(Ponto p1, Ponto p2, Ponto p3){
+    float v12[4] = {p2.x - p1.x,p2.y - p1.y,p2.z - p1.z,0};
+    float v13[4] = {p3.x - p1.x,p3.y - p1.y,p3.z - p1.z,0};
 
+    float res[4];
 
-vector<Ponto> getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Ponto> pontos){
+    utils::cross(v12,v13,res);
+    utils::normalize(res);
+    return Ponto(res[0],res[1],res[2]);
+}
+
+void getPointsBezier(int tesselation,vector<vector<int>>patchVector, vector<Ponto> pontos,char *filename){
     float part = 1.0f/(float)tesselation;
-    vector <Ponto> vectorRes;
+    vector <Ponto> vectorRes, normal, texture;
     for (vector<int> patch : patchVector) {
         vector<Ponto> points;
         for (int i = 0; i <= tesselation; i++) {
@@ -390,13 +645,39 @@ vector<Ponto> getPointsBezier(int tesselation,vector<vector<int>>patchVector, ve
                 Ponto upNext = points[indexNEXT + i];
                 Ponto botNext = points[indexNEXT + i + 1];
 
-                addTriangle(&vectorRes,upNext,upNow,botNow);
-                addTriangle(&vectorRes,botNow,botNext,upNext);
+                Ponto NupNow = upNow.getNormal();
+                Ponto NbotNow =botNow.getNormal();
+                Ponto NupNext = upNext.getNormal();
+                Ponto NbotNext = botNext.getNormal();
+
+
+                //Ponto n1 = getNormalPoint(botNow,upNow,upNext);
+                //Ponto n2 = getNormalPoint(upNext,botNext,botNow);
+
+
+                Ponto TupNow =  Ponto((u)*part,  (i)*part,0);
+                Ponto TbotNow = Ponto((u)*part,  (i+1)*part,0);
+                Ponto TupNext = Ponto((u+1)*part,(i)*part,0);
+                Ponto TbotNext =Ponto((u+1)*part,(i+1)*part,0);
+
+
+
+                addTriangle(&vectorRes,botNow,upNow,upNext);
+                addTriangle(&normal,NbotNow,NupNow,NupNext);
+                addTriangle(&texture,TbotNow,TupNow,TupNext);
+
+
+                addTriangle(&vectorRes,upNext,botNext,botNow);
+                addTriangle(&normal,NupNext,NbotNext,NbotNow);
+                addTriangle(&texture,TupNext,TbotNext,TbotNow);
+
+
 
             }
         }
     }
-    return vectorRes;
+
+    writeFile(vectorRes,normal,texture,filename);
 }
 
 
@@ -407,8 +688,8 @@ void printErro(const string& str){
 
 
 
-vector<Ponto> readFilePatch (int tesselation ,string filename){
-    ifstream file(filename);
+void readFilePatch (int tesselation ,string filePatch, char *filename){
+    ifstream file(filePatch);
     string str;
     getline(file,str);
     vector<vector<int>> patches;
@@ -441,7 +722,7 @@ vector<Ponto> readFilePatch (int tesselation ,string filename){
         vectorPontos.push_back(p);
     }
     printf("Vector pontos size %zu\n",vectorPontos.size());
-    return getPointsBezier(tesselation,patches,vectorPontos);
+    getPointsBezier(tesselation,patches,vectorPontos,filename);
 }
 
 
@@ -454,7 +735,7 @@ int main(int argc, char **argv){
             printf("Graphical primitives available:\n\n");
             printf("Plane (a square in the XZ plane, centred in the origin, subdivided in both X and Z directions\n");
             printf("Example ->./generator plane [length] [division] [filename]\n");
-            printf("\nBox (requires dimension, and the number of divisions per edge)\n");
+            printf("\nBox (requires dimension, and the lightNumber of divisions per edge)\n");
             printf("Example ->./generator box [length] [division] [filename]\n");
             printf("\nSphere (requires radius, slices and stacks)\n");
             printf("Example ->./generator sphere [radius] [slices] [stacks] [filename]\n");
@@ -480,10 +761,10 @@ int main(int argc, char **argv){
             int slices = std::stoi(argv[3]);
             int stacks = std::stoi(argv[4]);
             //list<float> *list = getPointsSphere(radius,slices,stacks);
-            vector<Ponto> vector = getPointsSphere(radius,slices,stacks);
-
             char *filename = argv[5];
-            writeFile(vector,filename);
+            getPointsSphere(radius,slices,stacks,filename);
+            //writeFile(vector,filename);
+
             printf("%s gerado\n",filename);
 
 
@@ -501,10 +782,9 @@ int main(int argc, char **argv){
             float length = std::stof(argv[2]);
             int divisions = std::stoi(argv[3]);
             //list<float> *list = getPointsBox(length,divisions);
-            vector<Ponto> vector = getPointsBox(length,divisions);
-
             char *filename = argv[4];
-            writeFile(vector,filename);
+            getPointsBox(length,divisions,filename);
+
             printf("%s gerado\n",filename);
 
         }
@@ -523,9 +803,8 @@ int main(int argc, char **argv){
             int slices = std::stoi(argv[4]);
             int stacks = std::stoi(argv[5]);
             //list<float> *list = getPointsCone(radius,height,slices,stacks);
-            vector<Ponto> vector = getPointsCone(radius,height,slices,stacks);
             char *filename = argv[6];
-            writeFile(vector,filename);
+            getPointsCone(radius,height,slices,stacks,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -543,9 +822,8 @@ int main(int argc, char **argv){
             float length = std::stof(argv[2]);
             int divisions = std::stoi(argv[3]);
             //list<float> *list = getPointsPlane(length,divisions);
-            vector<Ponto> vector = getPointsPlane(length,divisions);
             char *filename = argv[4];
-            writeFile(vector,filename);
+            getPointsPlane(length,divisions,filename);
             printf("%s gerado\n",filename);
         }
         catch (std::exception& ia){
@@ -563,9 +841,8 @@ int main(int argc, char **argv){
             int slices= std::stoi(argv[4]);
             int stacks= std::stoi(argv[5]);
             //list<float> *list = getPointsCylinder(radius,height,slices,stacks);
-            vector<Ponto> vector = getPointsCylinder(radius,height,slices,stacks);
             char *filename = argv[6];
-            writeFile(vector,filename);
+            getPointsCylinder(radius,height,slices,stacks,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -584,9 +861,8 @@ int main(int argc, char **argv){
             int slices= std::stoi(argv[4]);
             int stacks= std::stoi(argv[5]);
            // list<float> *list = getPointsTorus(radiusIn,radiusOut,slices,stacks);
-            vector<Ponto> vector = getPointsTorus(radiusIn,radiusOut,slices,stacks);
             char *filename = argv[6];
-            writeFile(vector,filename);
+            getPointsTorus(radiusIn,radiusOut,slices,stacks,filename);
             printf("%s gerado\n",filename);
 
         }
@@ -604,9 +880,8 @@ int main(int argc, char **argv){
             printf("%s\n",argv[4]);
             int tesselation = std::stoi(argv[3]);
             //list<float> *list = readFilePatch(tesselation,filePatch);
-            vector<Ponto> vector= readFilePatch(tesselation,filePatch);
             char *filename = argv[4];
-            writeFile(vector,filename);
+            readFilePatch(tesselation,filePatch,filename);
             printf("%s gerado\n",filename);
 
         }
