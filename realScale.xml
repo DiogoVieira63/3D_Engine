@@ -1,0 +1,470 @@
+<world>
+    <camera>
+        <position x="1190.0" y="1000" z="0" rMax="4408.0" rMin="545.0"/>
+        <lookAt x="0" y="0" z="0"/>
+        <up x="0" y="1" z="0"/>
+        <projection fov="80" near="1" far="100000"/>
+    </camera>
+    <lights>
+        <light type="point" posX="0" posY="0" posZ="0" />
+    </lights>
+    <group>
+        <!--SOL-->
+        <group>
+            <transform>
+                <scale x="109.0" y="109.0" z="109.0" />
+			</transform>
+            <models>
+                <model file="sphere2.3d">
+                    <texture file="textures/sun.jpg"/>
+                    <color>
+                        <diffuse R="240" G="224" B="5" />
+                        <ambient R="240" G="224" B="5" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="240" G="224" B="5" />
+                        <shininess value="255" />
+                    </color>
+                </model>
+
+            </models>
+        </group>
+        <!--Mercurio-->
+        <group>
+            <transform>
+                <rotate time="87.965" x="0" y="1" z="1"/>
+                <translate x="1128.7" y="0" z="0"/>
+                <scale x="0.383" y="0.383" z="0.383" />
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="58.67" x="0" y="1" z="0"/>
+			    </transform>
+            <models>
+                <model file="sphere2.3d">
+                    <texture file="textures/mercury.jpg"/>
+                </model>
+            </models>
+            </group>
+        </group>
+        <!--Venus-->
+        <group>
+            <transform>
+                <rotate time="224.84"  x="0" y="-1" z="-1"/>
+                <translate x="1162.3" y="0" z="0"/>
+                <scale x="0.949" y="0.949" z="0.949"/>
+            </transform>
+            <group>
+                <transform>
+                    <rotate time="243.0" x="0" y="1" z="0"/>
+			    </transform>
+                <models>
+                        <model file="sphere2.3d">
+                            <texture file="textures/venus.jpg"/>
+                        </model>
+                </models>
+            </group>
+        </group>
+
+        <!--Terra-->
+        <group>
+            <transform>
+                <rotate time="365.0"  x="1" y="1" z="1"/>
+                <translate x="1190.0" y="0" z="0"/>
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="1.0" x="0" y="1" z="0"/>
+			    </transform>
+                <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/earth.jpg"/>
+                    </model>
+                </models>
+            </group>
+
+            <!--Lua da Terra-->
+            <group>
+                <transform>
+                    <rotate time="28" x="0" y="1" z="0"/>
+			        <translate x="12" y="0" z="0"/>
+			        <scale x="0.25" y="0.25" z="0.25"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+        </group>
+        <!--Marte-->
+        <group>
+            <transform>
+                <rotate angle="90" time="686.1999999999999" x="0" y="1" z="1"/>
+                <translate x="1242.0" y="0" z="0"/>
+                <scale x="0.532" y="0.532" z="0.532"/>
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="1.04" x="0" y="1" z="0"/>
+			    </transform>
+                <models>
+                        <model file="sphere2.3d">
+                            <texture file="textures/mars.jpg"/>
+                        </model>
+                </models>
+            </group>
+
+        </group>
+        <!--Asteroides-->
+        <group units="10000">
+            <models>
+                <model file="asteroid2.3d">
+                    <texture file="textures/asteroid.jpg"/>
+                </model>
+            </models>
+            <transform>
+                <rotate time="10" timeR="200" angleR="360" x="0" y="1" z="0"/>
+                <translate x="0" xR="600" y="0" yR="200" z="1340.0"/>
+            </transform>
+        </group>
+        <!--Jupiter-->
+        <group>
+            <transform>
+                <rotate time="4332.549999999999" x="0" y="1" z="1"/>
+                <translate x="1610.0" y="0" z="0"/>
+                <scale x="11.21" y="11.21" z="11.21"/>
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="0.416" x="0" y="1" z="0"/>
+			    </transform>
+                <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/jupiter.jpg"/>
+                    </model>
+                </models>
+            </group>
+            <!--Lua IO-->
+            <group>
+                <transform>
+                    <rotate time="10" x="1" y="0" z="0"/>
+			        <translate x="0" y="12" z="12"/>
+			        <scale x="0.05" y="0.05" z="0.05"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+            <!--Lua Europa-->
+            <group>
+                <transform>
+                    <rotate time="10" x="0" y="0" z="1"/>
+			        <translate x="0" y="12" z="12"/>
+			        <scale x="0.05" y="0.05" z="0.05"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+            <!--Lua Ganymede-->
+            <group>
+                <transform>
+                    <rotate time="10" x="0" y="1" z="0"/>
+			        <translate x="12" y="12" z="0"/>
+			        <scale x="0.05" y="0.05" z="0.05"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+        </group>
+        <!--Saturno-->
+        <group>
+            <transform>
+                <rotate angle="270" time="10756.55" x="0" y="1" z="1"/>
+                <translate x="2047.0" y="0" z="0"/>
+                <scale x="9.45" y="9.45"  z="9.45" />
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="0.458" x="0" y="1" z="0"/>
+			    </transform>
+                <models>
+                        <model file="sphere2.3d">
+                            <texture file="textures/saturn.jpg"/>
+                        </model>
+                </models>
+            </group>
+            <!--Lua Mimas-->
+            <group>
+                <transform>
+                    <rotate angle="90" time="10" x="0" y="1" z="0"/>
+			        <translate x="0" y="0" z="12"/>
+			        <scale x="0.05" y="0.05" z="0.05"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+            <!--Lua Titan-->
+            <group>
+                <transform>
+                    <rotate time="10" x="1" y="0" z="0"/>
+			        <translate x="0" y="0" z="12"/>
+			        <scale x="0.05" y="0.05" z="0.05"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+            <!--Anel Saturno-->
+            <group>
+                <transform>
+                    <rotate time="30" angle="100" x="1" y="1" z="0"/>
+                </transform>
+                <group>
+                    <transform>
+			            <scale x="2" y="2" z="2"/>
+                    </transform>
+			        <models>
+			        	<model file="torus.3d">
+                            <color>
+                                <diffuse R="220" G="224" B="5" />
+                                <ambient R="240" G="224" B="5" />
+                                <specular R="0" G="0" B="0" />
+                                <emissive R="255" G="255" B="255" />
+                                <shininess value="255" />
+                            </color>
+                            <texture file="textures/ringsaturn.jpeg"/>
+                        </model>
+			        </models>
+		        </group>
+                <group>
+                    <transform>
+			            <scale x="2.5" y="2.5" z="2.5"/>
+                    </transform>
+			        <models>
+			        	<model file="torus.3d">
+                            <texture file="textures/ringsaturn.jpeg"/>
+                            <color>
+                                <diffuse R="220" G="224" B="5" />
+                                <ambient R="240" G="224" B="5" />
+                                <specular R="0" G="0" B="0" />
+                                <emissive R="255" G="255" B="255" />
+                                <shininess value="255" />
+                            </color>
+                        </model>
+			        </models>
+		        </group>
+		    </group>
+        </group>
+        <!--Urano-->
+        <group>
+            <transform>
+                <rotate angle ="180" time="30685.55" x="0" y="-1" z="-1"/>
+                <translate x="3007.0" y="0" z="0"/>
+                <scale x="4.01" y="4.01" z="4.01"/>
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="0.708" x="1" y="0" z="0"/>
+			    </transform>
+                <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/urano.jpg"/>
+                    </model>
+                </models>
+            </group>
+            <!--Lua Urano-->
+            <group>
+                <transform>
+                    <rotate time="10" angle="350" x="0" y="1" z="0"/>
+			        <translate x="0" y="0" z="12"/>
+			        <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+        </group>
+        <!--Neptuno-->
+        <group>
+            <transform>
+                <rotate angle="90" time="60188.5" x="0" y="1" z="1"/>
+                <translate x="4108.0" y="0" z="0"/>
+                <scale x="3.88" y="3.88" z="3.88"/>
+			</transform>
+            <group>
+                <transform>
+                    <rotate time="0.667" x="0" y="0" z="1"/>
+			    </transform>
+                <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/neptuno.jpg"/>
+                    </model>
+                </models>
+            </group>
+
+            <!--Lua Neptuno-->
+            <group>
+                <transform>
+                    <rotate time="10" angle="140" x="0" y="1" z="0"/>
+			        <translate x="0" y="0" z="12"/>
+			        <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+			    <models>
+                    <model file="sphere2.3d">
+                        <texture file="textures/moon.jpg"/>
+                    </model>
+			    </models>
+		    </group>
+        </group>  
+        <!--Estrelas--> 
+        <!--X constante-->
+        <group units = "100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <color r="255" g="255" b="255"/>
+                <transform>
+                    <translate x="-4408.0" y= "-4408.0" yR="8816.0" z="-4408.0" zR="8816.0"/>
+                    <rotate angle="90" x="0" y="0" z="1"/>
+                </transform>
+        </group>
+        <group units="100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <transform>
+                <translate x="4408.0"  y="-4408.0" yR="8816.0" z="-4408.0" zR="8816.0"/>
+                <rotate angle="90" x="0" y="0" z="1"/>
+            </transform>
+        </group>
+        <!--Z constante-->
+        <group units="100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <transform>
+                <translate x="-4408.0"  xR="8816.0" y="-4408.0" yR="8816.0" z="4408.0"/>
+                <rotate angle="90" x="1" y="0" z="0"/>
+            </transform>
+        </group>
+        <group units="100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <transform>
+                <translate x="-4408.0" xR="8816.0" y="-4408.0" yR="8816.0" z="-4408.0"/>
+                <rotate angle="90" x="1" y="0" z="0"/>
+            </transform>
+        </group>
+        <!--Y constante-->
+        <group units="100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <transform>
+                <translate x="-4408.0" xR="8816.0" y="-4408.0" z="-4408.0" zR="8816.0"/>
+            </transform>
+        </group>
+        <group units="100">
+        	<models>
+				<model file="star2.3d">
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </model>
+			</models>
+            <transform>
+                <translate x="-4408.0" xR="8816.0" y="4408.0" z="-4408.0" zR="8816.0"/>
+            </transform>
+        </group>
+        <!--Comet Orbit-->
+        <group>
+            <!--transform>
+                <rotate time="90" x="0" y="1" z="0"/>
+            </transform-->
+            <group>
+                <models>
+                    <model file="bezier_nt.3d">
+                        <texture file="comet3.jpg"/>
+                    </model>
+                    <color>
+                        <diffuse R="255" G="255" B="255" />
+                        <ambient R="255" G="255" B="255" />
+                        <specular R="0" G="0" B="0" />
+                        <emissive R="255" G="255" B="255" />
+                        <shininess value="0" />
+                    </color>
+                </models>
+                <transform>
+		        	<translate time = "100" align="True">
+		        		<point x = "800" y = "0" z = "0" />
+		        		<point x = "-4000" y = "0" z = "-3000" />
+		        		<point x = "-10000" y = "0" z = "0" />
+		        		<point x = "-4000" y = "0" z = "3000" />
+		        	</translate>
+                    <rotate angle="-90" x="1" y="0" z="0"/>
+		            <scale x="10" y="10" z="10" />
+		        </transform>
+            </group>
+        </group>
+    </group>
+</world>

@@ -1,0 +1,40 @@
+sizeMercury = 0.383
+sizeVenus = 0.949
+sizeEarthMoon = 0.2724
+sizeMars = 0.532
+sizeJupiter = 11.21
+sizeSaturn = 9.45
+sizeUranus = 4.01
+sizeNeptune = 3.88
+sizeSun = 109
+
+yearMercury = 0.241
+yearVenus = 0.616
+yearEarth = 1
+yearMars = 1.88
+yearJupiter = 11.87
+yearSaturn = 29.47
+yearUranus = 84.07
+yearNeptune = 164.9
+
+dayMercury = 58.67
+dayVenus = 243
+dayEarth = 1
+dayMars = 1.04
+dayJupiter = 0.416
+daySaturn = 0.458
+dayUranus = 0.708
+dayNeptune = 0.667
+
+
+distanceMercury = 0.387
+distanceVenus = 0.723
+distanceEarth = 1
+distanceMars = 1.52
+distanceAsteroid = 2.5
+distanceJupiter = 5.20
+distanceSaturn = 9.57
+distanceUranus = 19.17
+distanceNeptune = 30.18
+
+
