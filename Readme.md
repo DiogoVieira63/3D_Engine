@@ -1,13 +1,11 @@
 # Projeto de Computação Gráfica
 
-
-## Build
+## Build and Run 
 
     mkdir build
+    cd build
     cmake ..
     make
-
-## Run Examples
-
+    cd ..
     ./bin/generator plane 10 10 pontos/plane.3d
     ./bin/engine scenes/sistemaSolar.xml
