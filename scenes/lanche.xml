@@ -22,7 +22,7 @@
             <translate x="0" y="-11.5" z="0"/>
         </transform>
         <models>
-	        <model file="chao.3d">
+	        <model file="pontos/chao.3d">
                     <texture file="wood.jpeg"/>
             </model>
         </models>
@@ -31,7 +31,7 @@
                     <translate x="14" y="12.5" z="0"/>
                 </transform>
                 <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <color>
                             <diffuse R="255" G="255" B="255" />
                             <ambient R="255" G="255" B="255" />
@@ -49,7 +49,7 @@
                 <rotate angle="90" x="1" y="0" z="0"/>
             </transform>
             <models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                 </model>
             </models>
         </group>
@@ -62,7 +62,7 @@
             </transform>
             <color r="222" g="184" b="135"/>
             <models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                 </model>
             </models>
         </group>
@@ -75,7 +75,7 @@
             </transform>
             <color r="222" g="184" b="135"/>
             <models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                 </model>
             </models>
         </group>
@@ -88,14 +88,14 @@
             </transform>
             <color r="222" g="184" b="135"/>
             <models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                 </model>
             </models>
         </group>
         <group>
             <color r="80" g="80" b="80"/>
 	    	<models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                     <texture file="box.jpg"/>
                 </model>
 	    	</models>
@@ -107,7 +107,7 @@
         <group>
             <color r="80" g="80" b="80"/>
 	    	<models>
-	    	    <model file="chao.3d">
+	    	    <model file="pontos/chao.3d">
                 </model>
 	    	</models>
             <transform>
@@ -119,7 +119,7 @@
         <group>
             <color r="139" g="69" b="19"/>
 	    	<models>
-	        <model file="perna.3d">
+	        <model file="pontos/perna.3d">
                     <texture file="wood.jpeg"/>
             </model>
 	    	</models>
@@ -129,7 +129,7 @@
 	    </group>
         <group>
 	    	<models>
-	        <model file="perna.3d">
+	        <model file="pontos/perna.3d">
                     <texture file="wood.jpeg"/>
             </model>
 	    	</models>
@@ -139,7 +139,7 @@
 	    </group>
         <group>
 	    	<models>
-	        <model file="perna.3d">
+	        <model file="pontos/perna.3d">
                     <texture file="wood.jpeg"/>
             </model>
 	    	</models>
@@ -149,7 +149,7 @@
 	    </group>
         <group>
 	    	<models>
-	        <model file="perna.3d">
+	        <model file="pontos/perna.3d">
                     <texture file="wood.jpeg"/>
             </model>
 	    	</models>
@@ -164,7 +164,7 @@
             <group>
                 <color r="190" g="190" b="190"/>
 	        	<models>
-	        		<model file="teacup.3d">	   
+	        		<model file="pontos/teacup.3d">	   
                         <texture file="teapot.jpg"/>
                     </model>
 	        	</models>
@@ -175,7 +175,7 @@
 	        </group>
 	        <group>
 	        	<models>
-	        		<model file="teacup.3d">	   
+	        		<model file="pontos/teacup.3d">	   
                         <texture file="teapot.jpg"/>
                     </model>
 	        	</models>
@@ -186,7 +186,7 @@
 	        </group>
 	        <group>
 	        	<models>
-	        		<model file="teacup.3d">	   
+	        		<model file="pontos/teacup.3d">	   
                         <texture file="teapot.jpg"/>
                     </model>
 	        	</models>
@@ -202,7 +202,7 @@
 		            <scale x="0.50" y="0.50" z="0.50"/>
                 </transform>
                 <models>
-                    <model file="bezier.3d">
+                    <model file="pontos/bezier.3d">
                         <texture file="teapot.jpg"/>
                     </model>
                 </models>
@@ -214,7 +214,7 @@
 
                 </transform>
                 <models>
-                    <model file="cafe.3d">
+                    <model file="pontos/cafe.3d">
                         <color>
                             <diffuse R="189" G="149" B="111" />
                             <ambient R="189" G="149" B="111" />
@@ -233,7 +233,7 @@
 
                 </transform>
                 <models>
-                    <model file="cafe.3d">
+                    <model file="pontos/cafe.3d">
                         <color>
                             <diffuse R="189" G="149" B="111" />
                             <ambient R="189" G="149" B="111" />
@@ -250,7 +250,7 @@
                     <rotate angle="180" x="1" y="0" z="0"/>
                 </transform>
                 <models>
-                    <model file="cafe.3d">
+                    <model file="pontos/cafe.3d">
                         <color>
                             <diffuse R="189" G="149" B="111" />
                             <ambient R="189" G="149" B="111" />

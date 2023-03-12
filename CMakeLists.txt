@@ -11,6 +11,8 @@ PROJECT(class4)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
 add_executable(generator Generator/generator.cpp Utils/utils.cpp Utils/utils.h Engine/Ponto.h Engine/Ponto.cpp )
 
 add_executable(engine Engine/engine.cpp tinyxml2.cpp tinyxml2.h Engine/Ponto.h Engine/Ponto.cpp Engine/Transform.h Engine/Translation.h Engine/Scale.h Engine/Rotation.h Engine/Color.h Engine/Model.cpp Engine/Model.h Engine/Group.cpp Engine/Group.h Utils/utils.cpp Utils/utils.h Engine/xmlParser.cpp Engine/xmlParser.h Engine/Camera.cpp Engine/Camera.h Engine/Color.cpp Engine/Light.h)

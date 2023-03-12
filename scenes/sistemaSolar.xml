@@ -19,7 +19,7 @@
                 <scale x="20" y="20" z="20"/>
 			</transform>
             <models>
-                <model file="sphere.3d">
+                <model file="pontos/sphere.3d">
                     <texture file="textures/sun.jpg"/>
                     <color>
                         <diffuse R="240" G="224" B="5" />
@@ -40,7 +40,7 @@
                 <scale x="0.376" y="0.376" z="0.376"/>
 			</transform>
             <models>
-                <model file="sphere.3d">
+                <model file="pontos/sphere.3d">
                     <texture file="textures/mercury.jpg"/>
                 </model>
             </models>
@@ -53,7 +53,7 @@
                 <scale x="0.949" y="0.949" z="0.949"/>
             </transform>
             <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/venus.jpg"/>
                     </model>
             </models>
@@ -69,7 +69,7 @@
                     <rotate time="1" x="0" y="1" z="0"/>
 			    </transform>
                 <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/earth.jpg"/>
                     </model>
                 </models>
@@ -83,7 +83,7 @@
 			        <scale x="0.25" y="0.25" z="0.25"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -101,7 +101,7 @@
                     <rotate time="1.1" x="0" y="1" z="0"/>
 			    </transform>
                 <models>
-                        <model file="sphere.3d">
+                        <model file="pontos/sphere.3d">
                             <texture file="textures/mars.jpg"/>
                         </model>
                 </models>
@@ -111,7 +111,7 @@
         <!--Asteroides-->
         <group units="1000">
             <models>
-                <model file="asteroid.3d">
+                <model file="pontos/asteroid.3d">
                     <texture file="textures/asteroid.jpg"/>
                 </model>
             </models>
@@ -132,7 +132,7 @@
                     <rotate time="0.42" x="0" y="1" z="0"/>
 			    </transform>
                 <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/jupiter.jpg"/>
                     </model>
                 </models>
@@ -145,7 +145,7 @@
 			        <scale x="0.05" y="0.05" z="0.05"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -158,7 +158,7 @@
 			        <scale x="0.05" y="0.05" z="0.05"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -171,7 +171,7 @@
 			        <scale x="0.05" y="0.05" z="0.05"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -189,7 +189,7 @@
                     <rotate time="0.46" x="0" y="1" z="0"/>
 			    </transform>
                 <models>
-                        <model file="sphere.3d">
+                        <model file="pontos/sphere.3d">
                             <texture file="textures/saturn.jpg"/>
                         </model>
                 </models>
@@ -202,7 +202,7 @@
 			        <scale x="0.05" y="0.05" z="0.05"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -215,7 +215,7 @@
 			        <scale x="0.05" y="0.05" z="0.05"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -230,7 +230,7 @@
 			            <scale x="0.2 " y="0.2" z="0.2"/>
                     </transform>
 			        <models>
-			        	<model file="torus.3d">
+			        	<model file="pontos/torus.3d">
                             <color>
                                 <diffuse R="220" G="224" B="5" />
                                 <ambient R="240" G="224" B="5" />
@@ -247,7 +247,7 @@
 			            <scale x="0.25 " y="0.25" z="0.25"/>
                     </transform>
 			        <models>
-			        	<model file="torus.3d">
+			        	<model file="pontos/torus.3d">
                             <texture file="textures/ringsaturn.jpeg"/>
                             <color>
                                 <diffuse R="220" G="224" B="5" />
@@ -273,7 +273,7 @@
                     <rotate time="0.71" x="1" y="0" z="0"/>
 			    </transform>
                 <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/urano.jpg"/>
                     </model>
                 </models>
@@ -286,7 +286,7 @@
 			        <scale x="0.1" y="0.1" z="0.1"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -304,7 +304,7 @@
                     <rotate time="0.9" x="0" y="0" z="1"/>
 			    </transform>
                 <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/neptuno.jpg"/>
                     </model>
                 </models>
@@ -318,7 +318,7 @@
 			        <scale x="0.1" y="0.1" z="0.1"/>
                 </transform>
 			    <models>
-                    <model file="sphere.3d">
+                    <model file="pontos/sphere.3d">
                         <texture file="textures/moon.jpg"/>
                     </model>
 			    </models>
@@ -328,7 +328,7 @@
         <!--X constante-->
         <group units = "100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -346,7 +346,7 @@
         </group>
         <group units="100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -364,7 +364,7 @@
         <!--Z constante-->
         <group units="100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -381,7 +381,7 @@
         </group>
         <group units="100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -399,7 +399,7 @@
         <!--Y constante-->
         <group units="100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -415,7 +415,7 @@
         </group>
         <group units="100">
         	<models>
-				<model file="star.3d">
+				<model file="pontos/star.3d">
                     <color>
                         <diffuse R="255" G="255" B="255" />
                         <ambient R="255" G="255" B="255" />
@@ -436,7 +436,7 @@
             </transform-->
             <group>
                 <models>
-                    <model file="bezier_nt.3d">
+                    <model file="pontos/bezier_nt.3d">
                         <texture file="teapot.jpg"/>
                     </model>
                     <color>
