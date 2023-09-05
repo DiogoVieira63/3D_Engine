@@ -1,4 +1,6 @@
-# Projeto de Computação Gráfica
+# 3D Engine
+
+This project is mini scene graph based 3D engine, that uses XML files as scene configurations.
 
 ## Build and Run 
 
